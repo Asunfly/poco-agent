@@ -63,7 +63,10 @@ export function ExecutionContainer({ sessionId }: ExecutionContainerProps) {
 
       {/* Right panel - Artifacts (55%) */}
       <div className="w-[55%] min-w-0 flex flex-col bg-muted/30">
-        <ArtifactsPanel artifacts={session?.state_patch.artifacts} />
+        <ArtifactsPanel
+          artifacts={session?.state_patch.artifacts}
+          sessionId={sessionId}
+        />
       </div>
     </div>
   );

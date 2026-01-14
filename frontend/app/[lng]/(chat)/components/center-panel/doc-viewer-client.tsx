@@ -6,83 +6,48 @@ import DocViewer, {
   type DocViewerProps,
 } from "react-doc-viewer";
 import { pdfjs } from "react-pdf";
-
-// react-pdf 需要这些样式才能正确渲染文本层和注释层
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 
 export type { DocViewerProps } from "react-doc-viewer";
 
-// 使用 unpkg CDN，版本必须与 pdfjs-dist 包版本一致
-// pdfjs-dist 4.3.136 的 worker 文件
+// 使用指定的 pdfjs-dist 版本 worker
 const workerSrc = `https://unpkg.com/pdfjs-dist@4.3.136/build/pdf.worker.min.mjs`;
 
 let workerConfigured = false;
 
 /**
- * 立即配置 PDF.js worker（在模块加载时）
- * 必须在任何组件渲染之前完成配置
+ * 初始化 PDF.js Worker 并配置全局错误抑制
+ * 抑制 "TextLayer task cancelled" 等由于组件卸载导致的正常警告
  */
-function configurePDFWorkerImmediately() {
-  if (workerConfigured || typeof window === "undefined") {
-    return;
-  }
+function configurePDFWorker() {
+  if (workerConfigured || typeof window === "undefined") return;
 
-  // 配置 worker
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
   workerConfigured = true;
 
-  // 抑制 TextLayer task cancelled 警告
-  // 这是 PDF.js 在文档切换或组件卸载时的正常行为
-  const shouldSuppressMessage = (args: unknown[]): boolean => {
-    const message = args[0];
-    // 检查字符串消息
-    if (typeof message === "string") {
-      return (
-        message.includes("TextLayer task cancelled") ||
-        message.includes("AbortException") ||
-        message.includes("TextLayer") ||
-        message.includes("task cancelled")
-      );
-    }
-    // 检查对象消息（可能是 Error 对象）
-    if (message && typeof message === "object") {
-      const str = String(message);
-      return (
-        str.includes("TextLayer") ||
-        str.includes("AbortException") ||
-        str.includes("task cancelled")
-      );
-    }
-    // 检查所有参数
-    return args.some((arg) => {
-      const str = String(arg);
-      return (
-        str.includes("TextLayer task cancelled") ||
-        str.includes("AbortException: TextLayer")
-      );
-    });
-  };
+  // 定义需要屏蔽的日志模式
+  const suppressPatterns = [/TextLayer/, /task cancelled/, /AbortException/];
+  const shouldSuppress = (args: unknown[]) =>
+    args.some((arg) => suppressPatterns.some((p) => p.test(String(arg))));
 
-  const originalConsoleWarn = console.warn;
-  const originalConsoleError = console.error;
+  const originalWarn = console.warn;
+  const originalError = console.error;
 
-  console.warn = (...args: unknown[]) => {
-    if (shouldSuppressMessage(args)) return;
-    originalConsoleWarn.apply(console, args);
-  };
-
-  console.error = (...args: unknown[]) => {
-    if (shouldSuppressMessage(args)) return;
-    originalConsoleError.apply(console, args);
-  };
+  // 重写 console 方法以减少干扰
+  console.warn = (...args) =>
+    shouldSuppress(args) ? null : originalWarn(...args);
+  console.error = (...args) =>
+    shouldSuppress(args) ? null : originalError(...args);
 }
 
-// 立即执行配置
-configurePDFWorkerImmediately();
+// 模块加载即配置
+configurePDFWorker();
 
+/**
+ * 封装后的文档查看器客户端组件
+ */
 export function DocViewerClient(props: DocViewerProps) {
-  // Worker 已经在模块加载时配置好，直接渲染即可
   return (
     <DocViewer
       {...props}

@@ -20,88 +20,50 @@ import { Button } from "@/components/ui/button";
 import { FileSidebar, FileNode } from "./file-sidebar";
 import { DocumentViewer } from "./document-viewer";
 
+import { workspaceApi } from "@/lib/api/workspace";
+
 interface ArtifactsPanelProps {
   artifacts?: Artifact[];
+  sessionId?: string;
 }
 
-// Mock file data for testing with network URLs
-const mockFiles: FileNode[] = [
-  {
-    id: "folder-1",
-    name: "测试文件",
-    type: "folder",
-    path: "/test",
-    children: [
-      {
-        id: "file-pdf-3",
-        name: "arXiv 深度学习论文.pdf",
-        type: "file",
-        path: "/test/arxiv-2601-07708.pdf",
-        url: "https://arxiv.org/pdf/2601.07708",
-        mimeType: "application/pdf",
-      },
-      {
-        id: "file-docx-1",
-        name: "Word文档示例.docx",
-        type: "file",
-        path: "/test/sample.docx",
-        url: "https://philfan-pic.oss-cn-beijing.aliyuncs.com/test/doc.docx",
-        mimeType:
-          "application/msword",
-      },
-      {
-        id: "file-xlsx-1",
-        name: "Excel表格示例.xlsx",
-        type: "file",
-        path: "/test/sample.xlsx",
-        url: "philfan-pic.oss-cn-beijing.aliyuncs.com/test/xls.xlsx",
-        mimeType:
-          "application/vnd.ms-excel",
-      },
-      {
-        id: "file-pptx-1",
-        name: "PowerPoint演示文稿.ppt",
-        type: "file",
-        path: "/test/presentation.ppt",
-        url: "philfan-pic.oss-cn-beijing.aliyuncs.com/test/ppt.pptx",
-        mimeType: "application/vnd.ms-powerpoint",
-      },
-      {
-        id: "file-image-1",
-        name: "示例图片1.jpg",
-        type: "file",
-        path: "/test/image1.jpg",
-        url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-        mimeType: "image/jpeg",
-      },
-      {
-        id: "file-image-2",
-        name: "示例图片2.png",
-        type: "file",
-        path: "/test/image2.png",
-        url: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800",
-        mimeType: "image/png",
-      },
-      {
-        id: "file-image-3",
-        name: "示例图片3.jpg",
-        type: "file",
-        path: "/test/image3.jpg",
-        url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-        mimeType: "image/jpeg",
-      },
-    ],
-  },
-];
-
-export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
+export function ArtifactsPanel({
+  artifacts = [],
+  sessionId,
+}: ArtifactsPanelProps) {
+  const [files, setFiles] = React.useState<FileNode[]>([]);
   const [selectedFile, setSelectedFile] = React.useState<
     FileNode | undefined
   >();
   const [viewMode, setViewMode] = React.useState<"artifacts" | "document">(
     "artifacts",
   );
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+
+  // 当侧边栏开关时，同步切换视图模式
+  const toggleSidebar = React.useCallback(() => {
+    setIsSidebarOpen((prev) => {
+      const next = !prev;
+      // 如果是打开侧边栏，切换到文档预览模式
+      // 如果是关闭侧边栏，切回执行产物列表模式
+      setViewMode(next ? "document" : "artifacts");
+      if (!next) setSelectedFile(undefined); // 关闭时清空选择
+      return next;
+    });
+  }, []);
+
+  // Fetch file list from API
+  React.useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const data = await workspaceApi.getFiles(sessionId);
+        setFiles(data);
+      } catch (error) {
+        console.error("Failed to fetch workspace files:", error);
+      }
+    };
+    fetchFiles();
+  }, [sessionId]);
 
   const getArtifactConfig = (type: ArtifactType) => {
     switch (type) {
@@ -237,7 +199,7 @@ export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
                 variant="ghost"
                 size="icon"
                 className="size-8 rounded-lg hover:bg-muted"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                onClick={toggleSidebar}
                 title={isSidebarOpen ? "隐藏文件列表" : "显示文件列表"}
               >
                 {isSidebarOpen ? (
@@ -256,7 +218,7 @@ export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
             {isSidebarOpen && (
               <div className="relative z-10 animate-in slide-in-from-right duration-300 shadow-lg">
                 <FileSidebar
-                  files={mockFiles}
+                  files={files}
                   onFileSelect={handleFileSelect}
                   selectedFile={selectedFile}
                   isOpen={isSidebarOpen}
@@ -292,7 +254,7 @@ export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
                 variant="ghost"
                 size="icon"
                 className="size-8 rounded-lg hover:bg-muted"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                onClick={toggleSidebar}
                 title={isSidebarOpen ? "隐藏文件列表" : "显示文件列表"}
               >
                 {isSidebarOpen ? (
@@ -315,7 +277,7 @@ export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
             {isSidebarOpen && (
               <div className="relative z-10 animate-in slide-in-from-right duration-300 shadow-lg">
                 <FileSidebar
-                  files={mockFiles}
+                  files={files}
                   onFileSelect={handleFileSelect}
                   selectedFile={selectedFile}
                   isOpen={isSidebarOpen}
@@ -349,7 +311,7 @@ export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
               variant="ghost"
               size="icon"
               className="size-8 rounded-lg hover:bg-muted"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onClick={toggleSidebar}
               title={isSidebarOpen ? "隐藏文件列表" : "显示文件列表"}
             >
               {isSidebarOpen ? (
@@ -401,7 +363,7 @@ export function ArtifactsPanel({ artifacts = [] }: ArtifactsPanelProps) {
           {isSidebarOpen && (
             <div className="relative z-10 animate-in slide-in-from-right duration-300 shadow-lg">
               <FileSidebar
-                files={mockFiles}
+                files={files}
                 onFileSelect={handleFileSelect}
                 selectedFile={selectedFile}
                 isOpen={isSidebarOpen}
