@@ -1,5 +1,3 @@
-"use server";
-
 import { z } from "zod";
 import { chatService } from "@/features/chat/services/chat-service";
 

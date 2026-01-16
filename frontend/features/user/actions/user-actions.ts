@@ -1,5 +1,3 @@
-"use server";
-
 import { userService } from "@/features/user/services/user-service";
 
 export async function getUserProfileAction() {

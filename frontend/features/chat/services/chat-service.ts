@@ -2,8 +2,6 @@
  * Chat Service - Session execution and messaging
  */
 
-import "server-only";
-
 import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
 import type {
   ExecutionSession,

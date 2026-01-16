@@ -1,5 +1,3 @@
-import "server-only";
-
 import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
 import type { ProjectItem, TaskHistoryItem } from "@/features/projects/types";
 

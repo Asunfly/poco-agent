@@ -1,5 +1,3 @@
-"use server";
-
 import { z } from "zod";
 import { chatService } from "@/features/chat/services/chat-service";
 
@@ -35,12 +33,8 @@ export type CreateSessionInput = z.infer<typeof createSessionSchema>;
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 
 export async function createSessionAction(input: CreateSessionInput) {
-  console.log("input", input);
-  // const { prompt, config } = createSessionSchema.parse(input);
-  // console.log("prompt", prompt);
-  const prompt = "123";
-  const result = await chatService.createSession(prompt);
-  console.log("result", result);
+  const { prompt, config } = createSessionSchema.parse(input);
+  const result = await chatService.createSession(prompt, config);
   return {
     sessionId: result.session_id,
     runId: result.run_id,
@@ -57,4 +51,3 @@ export async function sendMessageAction(input: SendMessageInput) {
     status: result.status,
   };
 }
-
