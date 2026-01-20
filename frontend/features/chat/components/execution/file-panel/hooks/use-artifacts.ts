@@ -1,8 +1,36 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { getFilesAction } from "@/features/chat/actions/query-actions";
 import type { FileNode } from "@/features/chat/types";
 
 export type ViewMode = "artifacts" | "document";
+
+const normalizePath = (value: string) => value.replace(/^\/+/, "");
+
+const isActiveStatus = (status?: UseArtifactsOptions["sessionStatus"]) =>
+  status === "running" || status === "accepted";
+
+const isFinishedStatus = (status?: UseArtifactsOptions["sessionStatus"]) =>
+  status === "completed" ||
+  status === "failed" ||
+  status === "cancelled" ||
+  status === "stopped";
+
+const findFileByPath = (
+  nodes: FileNode[],
+  targetPath: string,
+): FileNode | undefined => {
+  const normalizedTarget = normalizePath(targetPath);
+  for (const node of nodes) {
+    if (node.type === "file" && normalizePath(node.path) === normalizedTarget) {
+      return node;
+    }
+    if (node.children && node.children.length) {
+      const found = findFileByPath(node.children, targetPath);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
 
 interface UseArtifactsOptions {
   sessionId?: string;
@@ -41,84 +69,114 @@ export function useArtifacts({
   sessionStatus,
 }: UseArtifactsOptions): UseArtifactsReturn {
   const [files, setFiles] = useState<FileNode[]>([]);
-  const [selectedFile, setSelectedFile] = useState<FileNode | undefined>();
+  const [selectedPath, setSelectedPath] = useState<string | undefined>();
   const [viewMode, setViewMode] = useState<ViewMode>("artifacts");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  // Track previous session status to detect when session finishes
-  const prevStatusRef = useRef<typeof sessionStatus>(undefined);
+
+  // Coalesce concurrent refresh triggers (manual / auto / polling) into one request.
+  const fetchPromiseRef = useRef<Promise<FileNode[]> | null>(null);
+  const fetchFiles = useCallback(async (): Promise<FileNode[]> => {
+    if (!sessionId) return [];
+    if (fetchPromiseRef.current) return fetchPromiseRef.current;
+
+    const promise = (async () => {
+      setIsRefreshing(true);
+      try {
+        const data = await getFilesAction({ sessionId });
+        setFiles(data);
+        return data;
+      } catch (error) {
+        console.error("[Artifacts] Failed to fetch workspace files:", error);
+        return [];
+      } finally {
+        setIsRefreshing(false);
+        fetchPromiseRef.current = null;
+      }
+    })();
+
+    fetchPromiseRef.current = promise;
+    return promise;
+  }, [sessionId]);
 
   // Manual refresh method
   const refreshFiles = useCallback(async () => {
-    if (!sessionId) return;
+    await fetchFiles();
+  }, [fetchFiles]);
 
-    try {
-      setIsRefreshing(true);
-      const data = await getFilesAction({ sessionId });
-      setFiles(data);
-    } catch (error) {
-      console.error("[Artifacts] Failed to fetch workspace files:", error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [sessionId]);
-
-  // Handle file fetching: initial load and auto-refresh on session finish
+  // Initial fetch when sessionId becomes available.
   useEffect(() => {
-    if (!sessionId) return;
+    setViewMode("artifacts");
+    setSelectedPath(undefined);
+    void fetchFiles();
+  }, [sessionId, fetchFiles]);
 
-    // Determine if we should fetch files:
-    // 1. Initial fetch when sessionId changes (handled by sessionId in deps)
-    // 2. Auto-refresh when session transitions from active to finished
-    const shouldAutoRefresh =
-      sessionStatus &&
-      (prevStatusRef.current === "running" ||
-        prevStatusRef.current === "accepted") &&
-      (sessionStatus === "completed" ||
-        sessionStatus === "failed" ||
-        sessionStatus === "cancelled" ||
-        sessionStatus === "stopped");
+  // Auto-refresh when session transitions into a finished status.
+  const prevStatusRef = useRef<typeof sessionStatus>(undefined);
+  useEffect(() => {
+    const prevStatus = prevStatusRef.current;
+    prevStatusRef.current = sessionStatus;
 
-    if (shouldAutoRefresh) {
-      console.log("[Artifacts] Session finished, refreshing file list...");
+    if (!sessionId || !sessionStatus) return;
+    if (isActiveStatus(prevStatus) && isFinishedStatus(sessionStatus)) {
+      void fetchFiles();
     }
-
-    // Fetch files (initial or auto-refresh)
-    const doFetch = async () => {
-      try {
-        console.log(
-          `[Artifacts] Fetching file tree for session ${sessionId}, status: ${sessionStatus}`,
-        );
-        setIsRefreshing(true);
-        const data = await getFilesAction({ sessionId });
-        setFiles(data);
-        console.log(
-          `[Artifacts] Successfully fetched ${data.length} root nodes`,
-        );
-      } catch (error) {
-        console.error("[Artifacts] Failed to fetch workspace files:", error);
-      } finally {
-        setIsRefreshing(false);
-      }
-    };
-
-    doFetch();
-
-    // Update ref for next comparison
-    if (sessionStatus) {
-      prevStatusRef.current = sessionStatus;
-    }
-  }, [sessionId, sessionStatus]); // Include both deps - sessionId changes trigger initial fetch, sessionStatus changes trigger auto-refresh
+  }, [sessionId, sessionStatus, fetchFiles]);
 
   // Select a file and switch to document view
   const selectFile = useCallback((file: FileNode) => {
-    setSelectedFile(file);
+    setSelectedPath(normalizePath(file.path));
     setViewMode("document");
   }, []);
 
   const closeViewer = useCallback(() => {
     setViewMode("artifacts");
-    setSelectedFile(undefined);
+    setSelectedPath(undefined);
   }, []);
+
+  const selectedFile = useMemo((): FileNode | undefined => {
+    if (!selectedPath) return undefined;
+    return (
+      findFileByPath(files, selectedPath) ?? {
+        id: selectedPath,
+        name: selectedPath.split("/").pop() || selectedPath,
+        path: selectedPath,
+        type: "file",
+      }
+    );
+  }, [files, selectedPath]);
+
+  // If the user opens a file before its preview URL is ready, poll until it becomes available.
+  useEffect(() => {
+    if (!sessionId) return;
+    if (viewMode !== "document") return;
+    if (!selectedPath) return;
+    if (selectedFile?.url) return;
+
+    const intervalMs = 2000;
+    const maxAttempts = 60; // ~2 minutes
+    let attempts = 0;
+    let cancelled = false;
+    let timer: number | undefined;
+
+    const pollOnce = async () => {
+      if (cancelled) return;
+      if (attempts >= maxAttempts) return;
+      attempts += 1;
+      await fetchFiles();
+      if (cancelled) return;
+      timer = window.setTimeout(() => {
+        void pollOnce();
+      }, intervalMs);
+    };
+
+    // Kick off immediately so the preview can become available ASAP.
+    void pollOnce();
+
+    return () => {
+      cancelled = true;
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [sessionId, viewMode, selectedPath, selectedFile?.url, fetchFiles]);
 
   // Listen for close-document-viewer event
   useEffect(() => {
