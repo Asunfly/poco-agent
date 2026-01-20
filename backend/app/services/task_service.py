@@ -5,12 +5,12 @@ from sqlalchemy.orm import Session
 from app.core.errors.error_codes import ErrorCode
 from app.core.errors.exceptions import AppException
 from app.repositories.message_repository import MessageRepository
-from app.repositories.mcp_preset_repository import McpPresetRepository
+from app.repositories.mcp_server_repository import McpServerRepository
 from app.repositories.project_repository import ProjectRepository
 from app.repositories.run_repository import RunRepository
 from app.repositories.session_repository import SessionRepository
 from app.repositories.skill_preset_repository import SkillPresetRepository
-from app.repositories.user_mcp_config_repository import UserMcpConfigRepository
+from app.repositories.user_mcp_install_repository import UserMcpInstallRepository
 from app.repositories.user_skill_install_repository import UserSkillInstallRepository
 from app.schemas.session import TaskConfig
 from app.schemas.task import TaskEnqueueRequest, TaskEnqueueResponse
@@ -206,17 +206,14 @@ class TaskService:
 
     def _build_user_mcp_defaults(self, db: Session, user_id: str) -> dict:
         defaults: dict = {}
-        configs = UserMcpConfigRepository.list_by_user(db, user_id)
-        for config in configs:
-            if not config.enabled:
+        installs = UserMcpInstallRepository.list_by_user(db, user_id)
+        for install in installs:
+            if not install.enabled:
                 continue
-            preset = McpPresetRepository.get_by_id(db, config.preset_id)
-            if not preset or not preset.is_active:
+            server = McpServerRepository.get_by_id(db, install.server_id)
+            if not server:
                 continue
-            entry = {"$ref": f"mcp-preset:{preset.name}"}
-            if config.overrides:
-                entry.update(config.overrides)
-            defaults[preset.name] = entry
+            defaults[server.name] = server.server_config
         return defaults
 
     def _build_user_skill_defaults(self, db: Session, user_id: str) -> dict:
