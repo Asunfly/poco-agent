@@ -18,6 +18,12 @@ export const API_ENDPOINTS = {
   sessionWorkspaceArchive: (sessionId: string) =>
     `/sessions/${sessionId}/workspace/archive`,
 
+  // User Input Requests (AskUserQuestion)
+  userInputRequests: "/user-input-requests",
+  userInputRequest: (requestId: string) => `/user-input-requests/${requestId}`,
+  userInputAnswer: (requestId: string) =>
+    `/user-input-requests/${requestId}/answer`,
+
   // Tasks
   tasks: "/tasks",
 

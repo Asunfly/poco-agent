@@ -7,3 +7,4 @@ export * from "./session";
 export * from "./run";
 export * from "./callback";
 export * from "./file";
+export * from "./user-input-request";

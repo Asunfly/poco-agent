@@ -7,9 +7,11 @@ import { TodoList } from "./todo-list";
 import { StatusBar } from "./status-bar";
 import { PendingMessageList } from "./pending-message-list";
 import { ChatInput } from "./chat-input";
+import { UserInputRequestCard } from "./user-input-request-card";
 import { PanelHeader } from "@/components/shared/panel-header";
 import { useChatMessages } from "./hooks/use-chat-messages";
 import { usePendingMessages } from "./hooks/use-pending-messages";
+import { useUserInputRequests } from "./hooks/use-user-input-requests";
 import type {
   ExecutionSession,
   StatePatch,
@@ -68,6 +70,14 @@ export function ChatPanel({
     deletePendingMessage,
   } = usePendingMessages({ session, sendMessage });
 
+  const {
+    requests: userInputRequests,
+    isLoading: isSubmittingUserInput,
+    submitAnswer: submitUserInputAnswer,
+  } = useUserInputRequests(session?.session_id);
+
+  const activeUserInput = userInputRequests[0];
+
   // Determine if session is running/active
   const isSessionActive =
     session?.status === "running" || session?.status === "accepted";
@@ -75,6 +85,10 @@ export function ChatPanel({
   // Handle send from input
   const handleSend = async (content: string, attachments?: InputFile[]) => {
     if (!session?.session_id) return;
+
+    if (activeUserInput) {
+      return;
+    }
 
     if (isSessionActive) {
       // Session is running, add to pending queue
@@ -151,8 +165,23 @@ export function ChatPanel({
         />
       )}
 
+      {activeUserInput && (
+        <div className="px-4 pb-3">
+          <UserInputRequestCard
+            request={activeUserInput}
+            isSubmitting={isSubmittingUserInput}
+            onSubmit={(answers) =>
+              submitUserInputAnswer(activeUserInput.id, answers)
+            }
+          />
+        </div>
+      )}
+
       {/* Input */}
-      <ChatInput onSend={handleSend} disabled={!session?.session_id} />
+      <ChatInput
+        onSend={handleSend}
+        disabled={!session?.session_id || !!activeUserInput}
+      />
     </div>
   );
 }

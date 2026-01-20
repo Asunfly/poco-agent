@@ -81,7 +81,14 @@
     "tokens": "令牌",
     "duration": "耗时",
     "executionTitle": "AI 执行",
-    "inputPlaceholder": "Enter 发送，Shift + Enter 换行"
+    "inputPlaceholder": "Enter 发送，Shift + Enter 换行",
+    "askUserTitle": "需要你的确认",
+    "askUserSubmit": "提交",
+    "askUserOtherPlaceholder": "其他（可选）",
+    "askUserRequired": "请回答所有问题后再提交",
+    "askUserSubmitted": "已提交答案",
+    "askUserFailed": "提交失败，请重试",
+    "askUserTimeout": "剩余 {{seconds}} 秒"
   },
   "status": {
     "pending": "待处理",

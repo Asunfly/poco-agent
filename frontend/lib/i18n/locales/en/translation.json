@@ -81,7 +81,14 @@
     "tokens": "Tokens",
     "duration": "Duration",
     "executionTitle": "AI Execution",
-    "inputPlaceholder": "Enter to send, Shift + Enter for new line"
+    "inputPlaceholder": "Enter to send, Shift + Enter for new line",
+    "askUserTitle": "Needs your input",
+    "askUserSubmit": "Submit",
+    "askUserOtherPlaceholder": "Other (optional)",
+    "askUserRequired": "Please answer all questions before submitting",
+    "askUserSubmitted": "Answers submitted",
+    "askUserFailed": "Submission failed, please try again",
+    "askUserTimeout": "Time left {{seconds}}s"
   },
   "status": {
     "pending": "Pending",
