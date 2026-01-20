@@ -115,3 +115,24 @@ class BackendClient:
             response.raise_for_status()
             data = response.json()
             return data.get("data", [])
+
+    async def create_user_input_request(self, payload: dict) -> dict:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{self.base_url}/api/v1/internal/user-input-requests",
+                json=payload,
+                headers={"X-Internal-Token": self.settings.internal_api_token},
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["data"]
+
+    async def get_user_input_request(self, request_id: str) -> dict:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{self.base_url}/api/v1/internal/user-input-requests/{request_id}",
+                headers={"X-Internal-Token": self.settings.internal_api_token},
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["data"]

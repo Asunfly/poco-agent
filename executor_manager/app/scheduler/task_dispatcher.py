@@ -91,6 +91,7 @@ class TaskDispatcher:
                 callback_url=callback_url,
                 callback_token=callback_token,
                 config=resolved_config,
+                callback_base_url=settings.callback_base_url,
                 sdk_session_id=sdk_session_id,
             )
 
