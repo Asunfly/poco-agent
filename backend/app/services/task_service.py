@@ -176,7 +176,7 @@ class TaskService:
             # Extract mcp_config toggles before merging (don't merge as dict)
             mcp_toggles = request_config.pop("mcp_config", {})
             merged_base = self._merge_config_map(merged_base, request_config)
-            # Build MCP config based on toggles (already returns mcpServers format)
+            # Build MCP config based on toggles (returns {server_name: server_config})
             merged_mcp = self._build_user_mcp_with_toggles(db, user_id, mcp_toggles)
             merged_base["mcp_config"] = merged_mcp
         else:
@@ -207,7 +207,7 @@ class TaskService:
         """Build default MCP config from user's enabled installations.
 
         Returns:
-            MCP config dict with mcpServers wrapper: {"mcpServers": {server_name: server_config, ...}}
+            MCP server config dict: {server_name: server_config, ...}
         """
         result: dict = {}
         installs = UserMcpInstallRepository.list_by_user(db, user_id)
@@ -220,7 +220,7 @@ class TaskService:
             # Extract mcpServers from server_config and merge
             server_mcp = server.server_config.get("mcpServers", {})
             result = {**result, **server_mcp}
-        return {"mcpServers": result}
+        return result
 
     def _build_user_mcp_with_toggles(
         self, db: Session, user_id: str, toggles: dict[str, bool]
@@ -234,7 +234,7 @@ class TaskService:
                     Servers not in this dict use their default enabled state.
 
         Returns:
-            MCP config dict with mcpServers wrapper: {"mcpServers": {server_name: server_config, ...}}
+            MCP server config dict: {server_name: server_config, ...}
         """
         result: dict = {}
         installs = UserMcpInstallRepository.list_by_user(db, user_id)
@@ -255,7 +255,7 @@ class TaskService:
             server_mcp = server.server_config.get("mcpServers", {})
             result = {**result, **server_mcp}
 
-        return {"mcpServers": result}
+        return result
 
     def _build_user_skill_defaults(self, db: Session, user_id: str) -> dict:
         defaults: dict = {}
