@@ -57,9 +57,7 @@ export function McpGrid({
               }`}
             >
               <div className="flex-1 min-w-0">
-                <div className="font-medium">
-                  {server.display_name || server.name}
-                </div>
+                <div className="font-medium">{server.name}</div>
                 <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                   <Badge
                     variant="outline"
@@ -68,9 +66,6 @@ export function McpGrid({
                     {server.scope === "system" ? "系统" : "用户"}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 truncate">
-                  {server.name}
-                </p>
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">

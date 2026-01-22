@@ -41,7 +41,6 @@ class McpServerService:
 
         server = McpServer(
             name=request.name,
-            display_name=request.display_name,
             scope=scope,
             owner_user_id=owner_user_id,
             server_config=request.server_config,
@@ -74,8 +73,6 @@ class McpServerService:
                 )
             server.name = request.name
 
-        if request.display_name is not None:
-            server.display_name = request.display_name
         if request.scope is not None:
             server.scope = request.scope
             if server.scope == "system":
@@ -104,7 +101,6 @@ class McpServerService:
         return McpServerResponse(
             id=server.id,
             name=server.name,
-            display_name=server.display_name,
             scope=server.scope,
             owner_user_id=server.owner_user_id,
             server_config=server.server_config,

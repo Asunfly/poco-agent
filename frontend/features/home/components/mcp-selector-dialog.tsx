@@ -144,8 +144,6 @@ export function McpSelectorDialog({
               {installedItems.map(({ server, install }) => {
                 const isEnabled =
                   localConfig[server.name] ?? install?.enabled ?? false;
-                // Use display_name (user's custom name) for showing, server.name for logic
-                const displayName = server.display_name || server.name;
 
                 return (
                   <div
@@ -160,7 +158,7 @@ export function McpSelectorDialog({
                         />
                       </div>
                       <div>
-                        <div className="text-sm font-medium">{displayName}</div>
+                        <div className="text-sm font-medium">{server.name}</div>
                         <div className="text-xs text-muted-foreground">MCP</div>
                       </div>
                     </div>
@@ -169,7 +167,7 @@ export function McpSelectorDialog({
                       onCheckedChange={(checked) =>
                         handleToggle(server.name, checked)
                       }
-                      aria-label={`Toggle ${displayName}`}
+                      aria-label={`Toggle ${server.name}`}
                     />
                   </div>
                 );

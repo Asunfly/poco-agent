@@ -317,9 +317,7 @@ export function TaskComposer({
                       className="cursor-pointer"
                     >
                       <Database className="mr-2 size-4" />
-                      <span className="flex-1">
-                        {m.server.display_name || m.server.name}
-                      </span>
+                      <span className="flex-1">{m.server.name}</span>
                       <ChevronRight className="size-3 text-muted-foreground" />
                     </DropdownMenuItem>
                   ))

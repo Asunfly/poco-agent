@@ -1,7 +1,6 @@
 export interface McpServer {
   id: number;
   name: string;
-  display_name: string | null;
   scope: string;
   owner_user_id: string | null;
   server_config: Record<string, unknown>;
@@ -12,14 +11,12 @@ export interface McpServer {
 export interface McpServerCreateInput {
   name: string;
   server_config: Record<string, unknown>;
-  display_name?: string | null;
   scope?: string | null;
 }
 
 export interface McpServerUpdateInput {
   name?: string | null;
   server_config?: Record<string, unknown> | null;
-  display_name?: string | null;
   scope?: string | null;
 }
 
