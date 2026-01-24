@@ -16,7 +16,7 @@ import { skillsService } from "@/features/skills/services/skills-service";
 import type { McpServer, UserMcpInstall } from "@/features/mcp/types";
 import type { Skill, UserSkillInstall } from "@/features/skills/types";
 import { useAppShell } from "@/components/shared/app-shell-context";
-import "./CardNav.css";
+import { cn } from "@/lib/utils";
 
 export interface CardNavProps {
   triggerText?: string;
@@ -34,7 +34,6 @@ interface InstalledItem {
  * CardNav Component
  *
  * An expandable card that shows MCP, Skill, and App sections on hover
- * The card content wrap height expands to reveal the 3 module cards sequentially
  */
 export function CardNav({
   triggerText = "将您的工具连接到 Poco",
@@ -83,7 +82,7 @@ export function CardNav({
     }
   }, [hasFetched, isLoading]);
 
-  // Get all installed MCPs (both enabled and disabled)
+  // Get all installed MCPs
   const installedMcps: InstalledItem[] = mcpInstalls.map((install) => {
     const server = mcpServers.find((s) => s.id === install.server_id);
     return {
@@ -94,7 +93,7 @@ export function CardNav({
     };
   });
 
-  // Get all installed Skills (both enabled and disabled)
+  // Get all installed Skills
   const installedSkills: InstalledItem[] = skillInstalls.map((install) => {
     const skill = skills.find((s) => s.id === install.skill_id);
     return {
@@ -150,7 +149,6 @@ export function CardNav({
     const cards = cardsRef.current.filter(Boolean);
     if (!navEl) return null;
 
-    // Initial state
     gsap.set(navEl, { height: 48 });
     gsap.set(cards, { opacity: 0, scale: 0.95, y: 15 });
 
@@ -159,22 +157,10 @@ export function CardNav({
       defaults: { ease: "power2.out" },
     });
 
-    // 1. Expand the container height to auto
-    tl.to(navEl, {
-      height: "auto",
-      duration: 0.15,
-    });
-
-    // 2. Staggered sequence for the cards to "appear in order"
+    tl.to(navEl, { height: "auto", duration: 0.15 });
     tl.to(
       cards,
-      {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 0.25,
-        stagger: 0.08,
-      },
+      { opacity: 1, scale: 1, y: 0, duration: 0.25, stagger: 0.08 },
       "-=0.25",
     );
 
@@ -184,7 +170,6 @@ export function CardNav({
   useLayoutEffect(() => {
     const tl = createTimeline();
     tlRef.current = tl;
-
     return () => {
       tl?.kill();
       tlRef.current = null;
@@ -253,7 +238,7 @@ export function CardNav({
   ) => {
     if (isLoading) {
       return (
-        <div className="nav-card-loading">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
           <span>同步中...</span>
         </div>
@@ -261,17 +246,24 @@ export function CardNav({
     }
 
     if (items.length === 0) {
-      return <span className="nav-card-empty">{emptyText}</span>;
+      return (
+        <span className="text-xs italic text-muted-foreground">
+          {emptyText}
+        </span>
+      );
     }
 
     const toggleFn = type === "mcp" ? toggleMcpEnabled : toggleSkillEnabled;
 
     return (
-      <div className="nav-card-scrollable-list">
+      <div className="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/40 scrollbar-track-muted/30 hover:scrollbar-thumb-muted-foreground/60">
         {items.map((item) => (
           <button
             key={item.id}
-            className={`nav-card-item ${item.enabled ? "nav-card-item--enabled" : ""}`}
+            className={cn(
+              "flex items-center gap-2 p-2 text-xs font-medium rounded-md border transition-all text-left w-full cursor-pointer",
+              "bg-muted/40 text-muted-foreground border-border/40 hover:bg-muted/60 hover:border-border/60",
+            )}
             onClick={(e) => {
               e.stopPropagation();
               toggleFn(item.installId, item.enabled);
@@ -279,9 +271,14 @@ export function CardNav({
             type="button"
           >
             <span
-              className={`nav-card-item-dot ${item.enabled ? "nav-card-item-dot--active" : ""}`}
+              className={cn(
+                "w-2.5 h-2.5 rounded-full flex-shrink-0 transition-all",
+                item.enabled
+                  ? "bg-primary shadow-sm"
+                  : "bg-zinc-400 dark:bg-zinc-500",
+              )}
             />
-            <span className="nav-card-item-name">{item.name}</span>
+            <span className="flex-1 truncate">{item.name}</span>
           </button>
         ))}
       </div>
@@ -289,87 +286,93 @@ export function CardNav({
   };
 
   return (
-    <div className={`card-nav-container ${className}`}>
+    <div className={cn("w-full", className)}>
       <nav
         ref={navRef}
-        className={`card-nav ${isExpanded ? "open" : ""}`}
+        className={cn(
+          "relative rounded-xl border border-border bg-card/50 overflow-hidden transition-all duration-[0.4s] ease-[cubic-bezier(0.23,1,0.32,1)] backdrop-blur-md",
+          "hover:shadow-[0_12px_40px_-12px_rgba(var(--foreground),0.15)] hover:bg-card/80",
+          isExpanded &&
+            "shadow-[0_12px_40px_-12px_rgba(var(--foreground),0.15)] bg-card/80",
+        )}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {/* Entry Bar */}
-        <div
-          className="card-nav-top"
-          role="button"
-          aria-expanded={isExpanded}
-          tabIndex={0}
-        >
-          <Plug className="card-nav-top-icon" />
-          <span className="card-nav-top-text">{triggerText}</span>
+        <div className="group flex items-center gap-3 p-3.5 cursor-pointer">
+          <Plug
+            className={cn(
+              "size-5 flex-shrink-0 text-muted-foreground transition-all duration-300",
+              isExpanded && "rotate-12",
+            )}
+          />
+          <span className="text-sm font-medium text-muted-foreground transition-colors duration-300">
+            {triggerText}
+          </span>
         </div>
 
         {/* Modular Content */}
-        <div ref={contentRef} className="card-nav-content-wrap">
-          <div className="card-nav-content">
-            {/* 1. MCP */}
+        <div ref={contentRef} className="overflow-hidden">
+          <div className="grid grid-cols-3 gap-4 p-4 border-t border-border/50 max-[900px]:grid-cols-1">
+            {/* MCP Card */}
             <div
               ref={setCardRef(0)}
-              className="nav-card nav-card--mcp"
-              role="button"
-              tabIndex={isExpanded ? 0 : -1}
+              className="group relative flex flex-col p-5 rounded-lg border bg-muted/30 border-border/50 hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] min-h-[140px]"
             >
-              <div className="nav-card-header">
-                <div className="nav-card-icon">
-                  <Server />
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
+                  <Server className="size-[1.125rem]" />
                 </div>
                 <button
-                  className="nav-card-label-button"
+                  className="flex items-center gap-1 bg-transparent border-none cursor-pointer transition-all duration-200 rounded px-2 py-1 -mx-2 -my-1 hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
                   onClick={(e) => handleLabelClick(e, "capabilities/mcp")}
                   type="button"
                 >
-                  <span className="nav-card-label">MCP</span>
-                  <ChevronRight className="nav-card-label-chevron" size={14} />
+                  <span className="text-base font-semibold tracking-[-0.01em] text-foreground">
+                    MCP
+                  </span>
+                  <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                 </button>
               </div>
               {renderItemBadges(installedMcps, "未安装 MCP", "mcp")}
             </div>
 
-            {/* 2. Skill */}
+            {/* Skill Card */}
             <div
               ref={setCardRef(1)}
-              className="nav-card nav-card--skill"
-              role="button"
-              tabIndex={isExpanded ? 0 : -1}
+              className="group relative flex flex-col p-5 rounded-lg border bg-muted/30 border-border/50 hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] min-h-[140px]"
             >
-              <div className="nav-card-header">
-                <div className="nav-card-icon">
-                  <Sparkles />
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
+                  <Sparkles className="size-[1.125rem]" />
                 </div>
                 <button
-                  className="nav-card-label-button"
+                  className="flex items-center gap-1 bg-transparent border-none cursor-pointer transition-all duration-200 rounded px-2 py-1 -mx-2 -my-1 hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
                   onClick={(e) => handleLabelClick(e, "capabilities/skills")}
                   type="button"
                 >
-                  <span className="nav-card-label">Skill</span>
-                  <ChevronRight className="nav-card-label-chevron" size={14} />
+                  <span className="text-base font-semibold tracking-[-0.01em] text-foreground">
+                    Skill
+                  </span>
+                  <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                 </button>
               </div>
               {renderItemBadges(installedSkills, "未安装技能", "skill")}
             </div>
 
-            {/* 3. App */}
-            <div
-              ref={setCardRef(2)}
-              className="nav-card nav-card--app"
-              role="button"
-              tabIndex={isExpanded ? 0 : -1}
-            >
-              <div className="nav-card-header">
-                <div className="nav-card-icon">
-                  <AppWindow />
+            {/* App Card */}
+            <div className="group relative flex flex-col p-5 rounded-lg border bg-muted/30 border-border/50 hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] min-h-[140px]">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
+                  <AppWindow className="size-[1.125rem]" />
                 </div>
-                <span className="nav-card-label">应用</span>
+                <span className="text-base font-semibold tracking-[-0.01em] text-foreground">
+                  应用
+                </span>
               </div>
-              <span className="nav-card-empty">即将推出</span>
+              <span className="text-xs italic text-muted-foreground">
+                即将推出
+              </span>
             </div>
           </div>
         </div>
