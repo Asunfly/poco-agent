@@ -178,10 +178,11 @@ class RunPullService:
         run = claim.get("run") or {}
         run_id = run.get("run_id")
         session_id = run.get("session_id")
+        scheduled_task_id = run.get("scheduled_task_id")
         user_id = claim.get("user_id") or ""
         prompt = claim.get("prompt") or ""
         config_snapshot = claim.get("config_snapshot") or {}
-        sdk_session_id = claim.get("sdk_session_id")
+        sdk_session_id = None if scheduled_task_id else claim.get("sdk_session_id")
 
         if not run_id or not session_id or not user_id or not prompt:
             logger.error(f"Invalid claim payload: {claim}")

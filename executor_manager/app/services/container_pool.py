@@ -318,6 +318,37 @@ class ContainerPool:
                 except Exception as e:
                     logger.error(f"Failed to stop container {container_id}: {e}")
 
+    async def delete_container(self, container_id: str) -> None:
+        """Delete a container explicitly (mainly for persistent mode).
+
+        This removes any session bindings, stops the container if it is still running,
+        and attempts to remove it from Docker. (In most cases the container is started
+        with auto_remove=True, so removal may already be handled by Docker.)
+        """
+        cid = (container_id or "").strip()
+        if not cid:
+            return
+
+        # Detach all sessions that still point to this container.
+        sessions = [sid for sid, c in self.session_to_container.items() if c == cid]
+        for sid in sessions:
+            self.session_to_container.pop(sid, None)
+
+        container = self.containers.pop(cid, None)
+        if not container:
+            return
+
+        try:
+            container.stop(timeout=10)
+        except Exception as e:
+            logger.error(f"Failed to stop container {cid}: {e}")
+
+        try:
+            container.remove(force=True)
+        except Exception:
+            # Best-effort: the container might have already been removed.
+            pass
+
     async def cancel_task(self, session_id: str) -> None:
         """Cancel task and stop container."""
         logger.info(f"Cancelling task for session {session_id}")

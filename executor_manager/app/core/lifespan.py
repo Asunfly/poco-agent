@@ -46,6 +46,26 @@ async def lifespan(app: FastAPI):
         CleanupService(scheduler)
         logger.info("Workspace cleanup service initialized")
 
+    if settings.scheduled_tasks_enabled:
+        from app.services.scheduled_task_dispatch_service import (
+            ScheduledTaskDispatchService,
+        )
+
+        interval = max(5, int(settings.scheduled_tasks_dispatch_interval_seconds))
+        logger.info(
+            "Initializing scheduled task dispatch service...",
+            extra={"interval_seconds": interval},
+        )
+        scheduled_task_dispatch_service = ScheduledTaskDispatchService()
+        scheduler.add_job(
+            scheduled_task_dispatch_service.dispatch_due,
+            trigger="interval",
+            seconds=interval,
+            id="dispatch-scheduled-tasks",
+            replace_existing=True,
+        )
+        logger.info("Scheduled task dispatch service initialized")
+
     yield
 
     if pull_service:

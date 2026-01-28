@@ -42,6 +42,15 @@ class Settings(BaseSettings):
     # Optional schedule config file (TOML/JSON). When provided, it becomes the source of truth.
     schedule_config_path: str | None = Field(default=None, alias="SCHEDULE_CONFIG_PATH")
 
+    # Scheduled tasks (cron) dispatch
+    scheduled_tasks_enabled: bool = Field(default=True, alias="SCHEDULED_TASKS_ENABLED")
+    scheduled_tasks_dispatch_interval_seconds: int = Field(
+        default=30, alias="SCHEDULED_TASKS_DISPATCH_INTERVAL_SECONDS"
+    )
+    scheduled_tasks_dispatch_batch_size: int = Field(
+        default=50, alias="SCHEDULED_TASKS_DISPATCH_BATCH_SIZE"
+    )
+
     # Queue-based scheduling (AgentRun.schedule_mode)
     task_pull_immediate_enabled: bool = Field(
         default=True, alias="TASK_PULL_IMMEDIATE_ENABLED"
