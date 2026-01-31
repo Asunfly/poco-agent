@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.user_mcp_install import UserMcpInstall
@@ -40,6 +41,30 @@ class UserMcpInstallRepository:
             )
             .order_by(UserMcpInstall.created_at.desc())
             .all()
+        )
+
+    @staticmethod
+    def bulk_set_enabled(
+        session_db: Session,
+        *,
+        user_id: str,
+        enabled: bool,
+        install_ids: list[int] | None = None,
+    ) -> int:
+        query = session_db.query(UserMcpInstall).filter(
+            UserMcpInstall.user_id == user_id,
+            UserMcpInstall.is_deleted.is_(False),
+        )
+        if install_ids is not None:
+            if not install_ids:
+                return 0
+            query = query.filter(UserMcpInstall.id.in_(install_ids))
+        return query.update(
+            {
+                UserMcpInstall.enabled: enabled,
+                UserMcpInstall.updated_at: func.now(),
+            },
+            synchronize_session=False,
         )
 
     @staticmethod

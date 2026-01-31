@@ -6,6 +6,8 @@ from app.models.user_skill_install import UserSkillInstall
 from app.repositories.skill_repository import SkillRepository
 from app.repositories.user_skill_install_repository import UserSkillInstallRepository
 from app.schemas.user_skill_install import (
+    UserSkillInstallBulkUpdateRequest,
+    UserSkillInstallBulkUpdateResponse,
     UserSkillInstallCreateRequest,
     UserSkillInstallResponse,
     UserSkillInstallUpdateRequest,
@@ -78,6 +80,21 @@ class UserSkillInstallService:
         db.commit()
         db.refresh(install)
         return self._to_response(install)
+
+    def bulk_update_installs(
+        self,
+        db: Session,
+        user_id: str,
+        request: UserSkillInstallBulkUpdateRequest,
+    ) -> UserSkillInstallBulkUpdateResponse:
+        updated_count = UserSkillInstallRepository.bulk_set_enabled(
+            db,
+            user_id=user_id,
+            enabled=request.enabled,
+            install_ids=request.install_ids,
+        )
+        db.commit()
+        return UserSkillInstallBulkUpdateResponse(updated_count=updated_count)
 
     def delete_install(self, db: Session, user_id: str, install_id: int) -> None:
         install = UserSkillInstallRepository.get_by_id(db, install_id)

@@ -206,11 +206,15 @@ export function CardNav({
   const batchToggleMcps = useCallback(
     async (enable: boolean) => {
       try {
-        await Promise.all(
-          mcpInstalls.map((install) =>
-            mcpService.updateInstall(install.id, { enabled: enable }),
-          ),
-        );
+        const installIds = mcpInstalls
+          .filter((install) => install.enabled !== enable)
+          .map((install) => install.id);
+        if (installIds.length > 0) {
+          await mcpService.bulkUpdateInstalls({
+            enabled: enable,
+            install_ids: installIds,
+          });
+        }
         setMcpInstalls((prev) =>
           prev.map((install) => ({ ...install, enabled: enable })),
         );
@@ -224,7 +228,7 @@ export function CardNav({
         }
       } catch (error) {
         console.error("[CardNav] Failed to batch toggle MCPs:", error);
-        toast.error("操作失败，请重试");
+        toast.error(t("hero.toasts.actionFailed"));
       }
     },
     [mcpInstalls, t],
@@ -234,11 +238,15 @@ export function CardNav({
   const batchToggleSkills = useCallback(
     async (enable: boolean) => {
       try {
-        await Promise.all(
-          skillInstalls.map((install) =>
-            skillsService.updateInstall(install.id, { enabled: enable }),
-          ),
-        );
+        const installIds = skillInstalls
+          .filter((install) => install.enabled !== enable)
+          .map((install) => install.id);
+        if (installIds.length > 0) {
+          await skillsService.bulkUpdateInstalls({
+            enabled: enable,
+            install_ids: installIds,
+          });
+        }
         setSkillInstalls((prev) =>
           prev.map((install) => ({ ...install, enabled: enable })),
         );
@@ -252,7 +260,7 @@ export function CardNav({
         }
       } catch (error) {
         console.error("[CardNav] Failed to batch toggle Skills:", error);
-        toast.error("操作失败，请重试");
+        toast.error(t("hero.toasts.actionFailed"));
       }
     },
     [skillInstalls, t],
@@ -265,7 +273,6 @@ export function CardNav({
         type === "mcp"
           ? installedMcps.filter((i) => i.enabled).length
           : installedSkills.filter((i) => i.enabled).length;
-      const limit = type === "mcp" ? MCP_LIMIT : SKILL_LIMIT;
       toast.warning(
         t(`hero.warnings.tooMany${type === "mcp" ? "Mcps" : "Skills"}`, {
           count,

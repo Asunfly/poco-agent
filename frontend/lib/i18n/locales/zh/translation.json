@@ -93,6 +93,7 @@
     "toasts": {
       "uploadSuccess": "文件上传成功",
       "uploadFailed": "文件上传失败",
+      "actionFailed": "操作失败，请重试",
       "fileTooLarge": "文件过大，最大支持 100MB"
     },
     "mcpSelector": {

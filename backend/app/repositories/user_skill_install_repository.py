@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.user_skill_install import UserSkillInstall
@@ -40,6 +41,30 @@ class UserSkillInstallRepository:
             )
             .order_by(UserSkillInstall.created_at.desc())
             .all()
+        )
+
+    @staticmethod
+    def bulk_set_enabled(
+        session_db: Session,
+        *,
+        user_id: str,
+        enabled: bool,
+        install_ids: list[int] | None = None,
+    ) -> int:
+        query = session_db.query(UserSkillInstall).filter(
+            UserSkillInstall.user_id == user_id,
+            UserSkillInstall.is_deleted.is_(False),
+        )
+        if install_ids is not None:
+            if not install_ids:
+                return 0
+            query = query.filter(UserSkillInstall.id.in_(install_ids))
+        return query.update(
+            {
+                UserSkillInstall.enabled: enabled,
+                UserSkillInstall.updated_at: func.now(),
+            },
+            synchronize_session=False,
         )
 
     @staticmethod

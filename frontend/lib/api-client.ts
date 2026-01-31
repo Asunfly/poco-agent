@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
   // MCP Installs (User)
   mcpInstalls: "/mcp-installs",
   mcpInstall: (installId: number) => `/mcp-installs/${installId}`,
+  mcpInstallsBulk: "/mcp-installs/bulk",
 
   // Skills
   skills: "/skills",
@@ -58,6 +59,7 @@ export const API_ENDPOINTS = {
   // Skill Installs (User)
   skillInstalls: "/skill-installs",
   skillInstall: (installId: number) => `/skill-installs/${installId}`,
+  skillInstallsBulk: "/skill-installs/bulk",
 
   // Slash Commands
   slashCommands: "/slash-commands",

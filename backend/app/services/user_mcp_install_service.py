@@ -6,6 +6,8 @@ from app.models.user_mcp_install import UserMcpInstall
 from app.repositories.mcp_server_repository import McpServerRepository
 from app.repositories.user_mcp_install_repository import UserMcpInstallRepository
 from app.schemas.user_mcp_install import (
+    UserMcpInstallBulkUpdateRequest,
+    UserMcpInstallBulkUpdateResponse,
     UserMcpInstallCreateRequest,
     UserMcpInstallResponse,
     UserMcpInstallUpdateRequest,
@@ -77,6 +79,21 @@ class UserMcpInstallService:
         db.commit()
         db.refresh(install)
         return self._to_response(install)
+
+    def bulk_update_installs(
+        self,
+        db: Session,
+        user_id: str,
+        request: UserMcpInstallBulkUpdateRequest,
+    ) -> UserMcpInstallBulkUpdateResponse:
+        updated_count = UserMcpInstallRepository.bulk_set_enabled(
+            db,
+            user_id=user_id,
+            enabled=request.enabled,
+            install_ids=request.install_ids,
+        )
+        db.commit()
+        return UserMcpInstallBulkUpdateResponse(updated_count=updated_count)
 
     def delete_install(self, db: Session, user_id: str, install_id: int) -> None:
         install = UserMcpInstallRepository.get_by_id(db, install_id)
