@@ -254,7 +254,8 @@ class AgentExecutor:
                         description=description,
                         prompt=definition.prompt,
                         tools=definition.tools,
-                        model=definition.model,
+                        # Subagent model overrides are intentionally unsupported.
+                        model=None,
                     )
                 agents = resolved or None
 
