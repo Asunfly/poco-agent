@@ -6,8 +6,6 @@ import {
   Plus,
   GitBranch,
   Chrome,
-  ListTodo,
-  SquareTerminal,
   Clock,
   AlarmClock,
 } from "lucide-react";
@@ -81,7 +79,6 @@ export function TaskComposer({
   value,
   onChange,
   mode,
-  onModeChange,
   onSend,
   isSubmitting,
   allowProjectize = true,
@@ -93,7 +90,6 @@ export function TaskComposer({
   value: string;
   onChange: (value: string) => void;
   mode: ComposerMode;
-  onModeChange: (mode: ComposerMode) => void;
   onSend: (options?: TaskSendOptions) => void | Promise<void>;
   isSubmitting?: boolean;
   allowProjectize?: boolean;
@@ -706,133 +702,34 @@ export function TaskComposer({
         </div>
       ) : null}
 
-      <div className="px-4 pb-3 min-h-[32px] flex items-center">
-        {mode === "scheduled" ? (
-          <div className="flex flex-wrap items-center gap-2">
-            {(scheduledName || "").trim().length > 0 ? (
-              <Badge
-                variant="outline"
-                role="button"
-                tabIndex={0}
-                className="cursor-pointer select-none max-w-full"
-                onClick={() => setScheduledSettingsOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setScheduledSettingsOpen(true);
-                  }
-                }}
-                title={(scheduledName || "").trim()}
-                aria-label={t("library.scheduledTasks.fields.name")}
-              >
-                <span className="max-w-[260px] truncate">
-                  {(scheduledName || "").trim()}
-                </span>
-              </Badge>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-
       {/* 底部工具栏 */}
-      <div className="flex items-center justify-between px-3 pb-3">
-        {/* 左侧：模式选择（Icon + Hover Label） */}
-        <div className="flex items-center gap-2 min-h-[32px]">
-          <div className="flex items-center gap-1 rounded-2xl border border-border bg-muted/20 p-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  disabled={isSubmitting || isUploading}
-                  className={`rounded-xl ${mode === "task" ? "bg-primary/20 text-primary hover:bg-primary/30" : ""}`}
-                  aria-label={t("hero.modes.task")}
-                  title={t("hero.modes.task")}
-                  onClick={() => onModeChange("task")}
-                >
-                  <SquareTerminal className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={8}>
-                <div className="font-medium">{t("hero.modes.task")}</div>
-                <div className="opacity-80">{t("hero.modes.taskHelp")}</div>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  disabled={isSubmitting || isUploading}
-                  className={`rounded-xl ${mode === "plan" ? "bg-primary/20 text-primary hover:bg-primary/30" : ""}`}
-                  aria-label={t("hero.modes.plan")}
-                  title={t("hero.modes.plan")}
-                  onClick={() => onModeChange("plan")}
-                >
-                  <ListTodo className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={8}>
-                <div className="font-medium">{t("hero.modes.plan")}</div>
-                <div className="opacity-80">{t("hero.modes.planHelp")}</div>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  disabled={isSubmitting || isUploading}
-                  className={`rounded-xl ${mode === "scheduled" ? "bg-primary/20 text-primary hover:bg-primary/30" : ""}`}
-                  aria-label={t("hero.modes.scheduled")}
-                  title={t("hero.modes.scheduled")}
-                  onClick={() => {
-                    onModeChange("scheduled");
-                  }}
-                >
-                  <Clock className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={8}>
-                <div className="font-medium">{t("hero.modes.scheduled")}</div>
-                <div className="opacity-80">
-                  {t("hero.modes.scheduledHelp")}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          <div className="h-8 flex items-center">
-            {mode === "scheduled" ? (
-              <Badge
-                variant="secondary"
-                role="button"
-                tabIndex={0}
-                className="h-8 rounded-xl cursor-pointer select-none px-3 py-0"
-                onClick={() => setScheduledSettingsOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setScheduledSettingsOpen(true);
-                  }
-                }}
-                aria-label={t("hero.modes.scheduled")}
-                title={t("hero.modes.scheduled")}
-              >
-                <Clock className="size-3" />
-                {scheduledSummary}
-              </Badge>
-            ) : null}
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pb-4">
+        {/* 定时摘要靠左 */}
+        <div className="flex min-h-[36px] flex-1 items-center gap-2">
+          {mode === "scheduled" ? (
+            <Badge
+              variant="secondary"
+              role="button"
+              tabIndex={0}
+              className="inline-flex h-9 w-fit items-center gap-2 rounded-xl cursor-pointer select-none px-3 py-0"
+              onClick={() => setScheduledSettingsOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setScheduledSettingsOpen(true);
+                }
+              }}
+              aria-label={t("hero.modes.scheduled")}
+              title={t("hero.modes.scheduled")}
+            >
+              <Clock className="size-3" />
+              <span className="text-sm font-medium">{scheduledSummary}</span>
+            </Badge>
+          ) : null}
         </div>
 
-        {/* 右侧操作按钮 */}
-        <div className="flex items-center gap-1">
+        {/* 操作按钮靠右 */}
+        <div className="flex flex-wrap items-center justify-end gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

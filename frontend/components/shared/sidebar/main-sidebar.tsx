@@ -102,6 +102,7 @@ function DroppableAllTasksGroup({
   selectedTaskIds,
   onToggleTaskSelection,
   onEnableSelectionMode,
+  onTaskNavigate,
 }: {
   title: string;
   tasks: TaskHistoryItem[];
@@ -113,6 +114,7 @@ function DroppableAllTasksGroup({
   selectedTaskIds?: Set<string>;
   onToggleTaskSelection?: (taskId: string) => void;
   onEnableSelectionMode?: (taskId: string) => void;
+  onTaskNavigate?: () => void;
 }) {
   const { t } = useT("translation");
   const { setNodeRef, isOver } = useDroppable({
@@ -151,6 +153,7 @@ function DroppableAllTasksGroup({
               selectedTaskIds={selectedTaskIds}
               onToggleTaskSelection={onToggleTaskSelection}
               onEnableSelectionMode={onEnableSelectionMode}
+              onNavigate={onTaskNavigate}
             />
             {isOver && (
               <div className="flex items-center justify-center p-2 text-xs text-primary bg-primary/5 rounded border border-dashed border-primary/20 mt-1">
@@ -190,7 +193,7 @@ export function MainSidebar({
   const { t } = useT("translation");
   const router = useRouter();
   const params = useParams();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile, setOpenMobile } = useSidebar();
   const { searchKey } = useSearchDialog();
   const { theme, setTheme } = useTheme();
   const { currentLanguage, changeLanguage } = useSettingsLanguage();
@@ -370,13 +373,20 @@ export function MainSidebar({
     [onRenameProject],
   );
 
+  const closeMobileSidebar = React.useCallback(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, setOpenMobile]);
+
   const handleProjectClick = React.useCallback(
     (projectId: string) => {
       router.push(
         lng ? `/${lng}/projects/${projectId}` : `/projects/${projectId}`,
       );
+      closeMobileSidebar();
     },
-    [router, lng],
+    [router, lng, closeMobileSidebar],
   );
 
   const toggleProjectExpanded = React.useCallback((projectId: string) => {
@@ -477,7 +487,10 @@ export function MainSidebar({
               <SidebarMenu className="group-data-[collapsible=icon]:px-0">
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    onClick={onNewTask}
+                    onClick={() => {
+                      onNewTask();
+                      closeMobileSidebar();
+                    }}
                     className="h-[36px] min-w-0 max-w-[calc(var(--sidebar-width)-16px)] w-full justify-start gap-3 rounded-[10px] px-3 py-[7.5px] text-muted-foreground transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[collapsible=icon]:max-w-[var(--sidebar-width-icon)] group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group/new-task"
                     tooltip={t("sidebar.newTask")}
                   >
@@ -515,6 +528,7 @@ export function MainSidebar({
                           if (isDisabled) return; // Disabled - do nothing
                           if (href) {
                             router.push(lng ? `/${lng}${href}` : href);
+                            closeMobileSidebar();
                           }
                         }}
                         className={cn(
@@ -609,6 +623,7 @@ export function MainSidebar({
                           onEnableProjectSelectionMode={
                             handleEnableProjectSelectionMode
                           }
+                          onTaskNavigate={closeMobileSidebar}
                         />
                       ))}
                     </SidebarMenu>
@@ -631,6 +646,7 @@ export function MainSidebar({
               selectedTaskIds={selectedTaskIds}
               onToggleTaskSelection={handleToggleTaskSelection}
               onEnableSelectionMode={handleEnableTaskSelectionMode}
+              onTaskNavigate={closeMobileSidebar}
             />
           </div>
         </SidebarContent>

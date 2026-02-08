@@ -386,8 +386,8 @@ export function ScheduledTaskDetailPageClient({ taskId }: { taskId: string }) {
                 </div>
 
                 <div className="rounded-lg border border-border p-4 space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-sm font-medium">
+                  <div className="flex min-w-0 flex-nowrap items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="text-sm font-medium shrink-0">
                       {t("library.scheduledTasks.fields.prompt")}
                     </div>
                   </div>
@@ -397,14 +397,14 @@ export function ScheduledTaskDetailPageClient({ taskId }: { taskId: string }) {
                 </div>
 
                 <div className="rounded-lg border border-border p-4 space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-sm font-medium">
+                  <div className="flex min-w-0 flex-nowrap items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="text-sm font-medium shrink-0">
                       {t("library.scheduledTasks.detail.runsTitle")}
                     </div>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="gap-2"
+                      className="gap-2 shrink-0"
                       onClick={() => refresh()}
                       disabled={isRefreshing}
                     >
@@ -418,8 +418,8 @@ export function ScheduledTaskDetailPageClient({ taskId }: { taskId: string }) {
                       {t("library.scheduledTasks.detail.noRuns")}
                     </div>
                   ) : (
-                    <div className="w-full overflow-auto rounded-lg border border-border">
-                      <table className="w-full text-sm">
+                    <div className="w-full overflow-x-auto rounded-lg border border-border [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      <table className="w-full min-w-[720px] whitespace-nowrap text-sm">
                         <thead className="bg-muted/40 text-muted-foreground">
                           <tr>
                             <th className="px-4 py-3 text-left font-medium">

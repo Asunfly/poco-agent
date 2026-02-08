@@ -62,6 +62,7 @@ interface CollapsibleProjectItemProps {
   onEnableSelectionMode?: (taskId: string) => void;
   onToggleProjectSelection?: (projectId: string) => void;
   onEnableProjectSelectionMode?: (projectId: string) => void;
+  onTaskNavigate?: () => void;
 }
 
 /**
@@ -86,6 +87,7 @@ export function CollapsibleProjectItem({
   onEnableSelectionMode,
   onToggleProjectSelection,
   onEnableProjectSelectionMode,
+  onTaskNavigate,
 }: CollapsibleProjectItemProps) {
   const { t } = useT("translation");
   const { setNodeRef, isOver } = useDroppable({
@@ -283,6 +285,7 @@ export function CollapsibleProjectItem({
               onToggleTaskSelection={onToggleTaskSelection}
               onEnableSelectionMode={onEnableSelectionMode}
               isNested
+              onNavigate={onTaskNavigate}
             />
           </div>
         )}

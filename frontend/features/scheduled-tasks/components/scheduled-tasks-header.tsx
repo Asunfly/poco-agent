@@ -18,8 +18,11 @@ export function ScheduledTasksHeader({
   return (
     <PageHeaderShell
       left={
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <Clock className="size-5 text-muted-foreground" aria-hidden="true" />
+        <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
+          <Clock
+            className="hidden size-5 text-muted-foreground md:block"
+            aria-hidden="true"
+          />
           <div className="min-w-0">
             <p className="text-base font-semibold leading-tight text-foreground">
               {t("library.scheduledTasks.page.title")}

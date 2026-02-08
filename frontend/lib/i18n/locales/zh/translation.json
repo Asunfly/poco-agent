@@ -59,6 +59,11 @@
       "planPlaceholder": "描述一个复杂任务，我会先输出执行计划，等你确认后再开始执行…",
       "planPrefix": "请先输出一个清晰可执行的计划（分步骤、带检查点），不要直接执行。等我确认后，再按步骤执行。\\n\\n任务：{{prompt}}"
     },
+    "modeLabels": {
+      "task": "任务模式",
+      "plan": "计划模式",
+      "scheduled": "定时模式"
+    },
     "repo": {
       "toggle": "仓库设置",
       "dialogTitle": "仓库设置",

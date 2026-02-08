@@ -58,6 +58,11 @@
       "planPlaceholder": "Décrivez une tâche complexe. Je proposerai d'abord un plan, puis exécuterai après votre confirmation…",
       "planPrefix": "Proposez d'abord un plan d'exécution clair (étapes avec points de contrôle). Ne pas encore exécuter. Après ma confirmation, exécuter étape par étape.\\n\\nTâche : {{prompt}}"
     },
+    "modeLabels": {
+      "task": "Mode tâche",
+      "plan": "Mode plan",
+      "scheduled": "Mode planifié"
+    },
     "repo": {
       "toggle": "Paramètres du dépôt",
       "dialogTitle": "Paramètres du dépôt",

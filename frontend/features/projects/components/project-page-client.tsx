@@ -17,6 +17,7 @@ import {
   TaskComposer,
   type TaskSendOptions,
 } from "@/features/home/components/task-composer";
+import { ModeToggle } from "@/features/home/components/mode-toggle";
 import { useAppShell } from "@/components/shared/app-shell-context";
 import { scheduledTasksService } from "@/features/scheduled-tasks/services/scheduled-tasks-service";
 import { toast } from "sonner";
@@ -205,12 +206,20 @@ export function ProjectPageClient({ projectId }: ProjectPageClientProps) {
             </p>
           </div>
 
+          <div className="mb-5">
+            <ModeToggle
+              mode={mode}
+              onModeChange={setMode}
+              disabled={isSubmitting}
+              className="w-full"
+            />
+          </div>
+
           <TaskComposer
             textareaRef={textareaRef}
             value={inputValue}
             onChange={setInputValue}
             mode={mode}
-            onModeChange={setMode}
             onSend={handleSendTask}
             isSubmitting={isSubmitting}
             allowProjectize={false}

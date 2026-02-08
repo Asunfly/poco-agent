@@ -57,6 +57,7 @@ interface DraggableTaskProps {
   onToggleSelection?: (taskId: string) => void;
   onEnableSelectionMode?: (taskId: string) => void;
   isNested?: boolean;
+  onNavigate?: () => void;
 }
 
 /**
@@ -74,6 +75,7 @@ function DraggableTask({
   onToggleSelection,
   onEnableSelectionMode,
   isNested,
+  onNavigate,
 }: DraggableTaskProps) {
   const { t } = useT("translation");
   const router = useRouter();
@@ -132,6 +134,7 @@ function DraggableTask({
       onToggleSelection?.(task.id);
     } else {
       router.push(lng ? `/${lng}/chat/${task.id}` : `/chat/${task.id}`);
+      onNavigate?.();
     }
   };
 
@@ -307,6 +310,7 @@ export function TaskHistoryList({
   onToggleTaskSelection,
   onEnableSelectionMode,
   isNested = false,
+  onNavigate,
 }: {
   tasks: TaskHistoryItem[];
   onDeleteTask: (taskId: string) => Promise<void> | void;
@@ -318,6 +322,7 @@ export function TaskHistoryList({
   onToggleTaskSelection?: (taskId: string) => void;
   onEnableSelectionMode?: (taskId: string) => void;
   isNested?: boolean;
+  onNavigate?: () => void;
 }) {
   const params = useParams();
   const lng = React.useMemo(() => {
@@ -359,6 +364,7 @@ export function TaskHistoryList({
             onToggleSelection={onToggleTaskSelection}
             onEnableSelectionMode={onEnableSelectionMode}
             isNested={isNested}
+            onNavigate={onNavigate}
           />
         ))}
       </SidebarMenu>

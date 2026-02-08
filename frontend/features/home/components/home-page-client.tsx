@@ -17,6 +17,7 @@ import { useAppShell } from "@/components/shared/app-shell-context";
 import { scheduledTasksService } from "@/features/scheduled-tasks/services/scheduled-tasks-service";
 import { toast } from "sonner";
 import type { TaskConfig } from "@/features/chat/types/api/session";
+import { ModeToggle } from "./mode-toggle";
 
 export function HomePageClient() {
   const { t } = useT("translation");
@@ -192,12 +193,20 @@ export function HomePageClient() {
             </h1>
           </div>
 
+          <div className="mb-5">
+            <ModeToggle
+              mode={mode}
+              onModeChange={setMode}
+              disabled={isSubmitting}
+              className="w-full"
+            />
+          </div>
+
           <TaskComposer
             textareaRef={textareaRef}
             value={inputValue}
             onChange={setInputValue}
             mode={mode}
-            onModeChange={setMode}
             onSend={handleSendTask}
             isSubmitting={isSubmitting}
             onFocus={() => setIsInputFocused(true)}

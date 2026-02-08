@@ -90,8 +90,8 @@ export function ScheduledTasksTable({
   }, [tasks]);
 
   return (
-    <div className="w-full overflow-auto rounded-lg border border-border">
-      <table className="w-full text-sm">
+    <div className="w-full overflow-x-auto rounded-lg border border-border [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <table className="w-full min-w-[720px] whitespace-nowrap text-sm">
         <thead className="bg-muted/40 text-muted-foreground">
           <tr>
             <th className="px-4 py-3 text-left font-medium">

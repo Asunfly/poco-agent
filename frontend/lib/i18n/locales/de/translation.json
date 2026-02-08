@@ -59,6 +59,11 @@
       "planPlaceholder": "Beschreibe eine komplexe Aufgabe. Ich werde zuerst einen Plan vorschlagen und dann nach deiner Bestätigung ausführen…",
       "planPrefix": "Schlage zuerst einen klaren Ausführungsplan vor (Schritte mit Kontrollpunkten). Noch nicht ausführen. Nach meiner Bestätigung schrittweise ausführen.\\n\\nAufgabe: {{prompt}}"
     },
+    "modeLabels": {
+      "task": "Aufgabenmodus",
+      "plan": "Planmodus",
+      "scheduled": "Zeitplanmodus"
+    },
     "repo": {
       "toggle": "Repository-Einstellungen",
       "dialogTitle": "Repository-Einstellungen",

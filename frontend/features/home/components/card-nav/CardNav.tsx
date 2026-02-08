@@ -481,14 +481,14 @@ export function CardNav({
 
         {/* Modular Content */}
         <div ref={contentRef} className="overflow-hidden">
-          <div className="grid grid-cols-3 gap-4 p-4 border-t border-border/50 max-[900px]:grid-cols-1">
+          <div className="flex flex-nowrap gap-4 overflow-x-auto border-t border-border/50 p-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-3 md:overflow-visible">
             {/* MCP Card */}
             <div
               ref={setCardRef(0)}
-              className="group relative flex flex-col p-5 rounded-lg border bg-muted/30 border-border/50 hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] min-h-[140px]"
+              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+              <div className="mb-3 flex min-w-0 items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex shrink-0 items-center gap-2.5">
                   <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
                     <Server className="size-[1.125rem]" />
                   </div>
@@ -503,7 +503,7 @@ export function CardNav({
                     <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                   </button>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex shrink-0 items-center gap-1">
                   {installedMcps.filter((i) => i.enabled).length > 0 && (
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -549,10 +549,10 @@ export function CardNav({
             {/* Skill Card */}
             <div
               ref={setCardRef(1)}
-              className="group relative flex flex-col p-5 rounded-lg border bg-muted/30 border-border/50 hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] min-h-[140px]"
+              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+              <div className="mb-3 flex min-w-0 items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex shrink-0 items-center gap-2.5">
                   <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
                     <Sparkles className="size-[1.125rem]" />
                   </div>
@@ -567,7 +567,7 @@ export function CardNav({
                     <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                   </button>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex shrink-0 items-center gap-1">
                   {installedSkills.filter((i) => i.enabled).length > 0 && (
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -611,8 +611,8 @@ export function CardNav({
             </div>
 
             {/* App Card */}
-            <div className="group relative flex flex-col p-5 rounded-lg border bg-muted/30 border-border/50 hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] min-h-[140px]">
-              <div className="flex items-center gap-2.5 mb-3">
+            <div className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink">
+              <div className="mb-3 flex min-w-0 items-center gap-2.5 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
                   <AppWindow className="size-[1.125rem]" />
                 </div>

@@ -59,6 +59,11 @@
       "planPlaceholder": "Describe a complex task. I will propose a plan first, then execute after you confirm…",
       "planPrefix": "First, propose a clear execution plan (steps with checkpoints). Do not execute yet. After I confirm, execute step by step.\\n\\nTask: {{prompt}}"
     },
+    "modeLabels": {
+      "task": "Task Mode",
+      "plan": "Plan Mode",
+      "scheduled": "Scheduled Mode"
+    },
     "repo": {
       "toggle": "Repository settings",
       "dialogTitle": "Repository settings",
