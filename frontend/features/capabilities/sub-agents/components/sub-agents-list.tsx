@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Settings, Trash2 } from "lucide-react";
 
 import { useT } from "@/lib/i18n/client";
@@ -28,6 +29,7 @@ interface SubAgentsListProps {
   onToggleEnabled?: (subAgentId: number, enabled: boolean) => void;
   onEdit?: (subAgent: SubAgent) => void;
   onDelete?: (subAgent: SubAgent) => void;
+  toolbarSlot?: React.ReactNode;
 }
 
 export function SubAgentsList({
@@ -37,17 +39,21 @@ export function SubAgentsList({
   onToggleEnabled,
   onEdit,
   onDelete,
+  toolbarSlot,
 }: SubAgentsListProps) {
   const { t } = useT("translation");
   const enabledCount = subAgents.filter((a) => a.enabled).length;
-
   return (
     <div className="space-y-6">
-      <div className="rounded-xl bg-muted/50 px-5 py-3">
+      <div className="rounded-xl bg-muted/50 px-5 py-3 flex flex-wrap items-center gap-3 md:flex-nowrap md:justify-between">
         <span className="text-sm text-muted-foreground">
-          {t("library.subAgents.summary")} {subAgents.length} ·{" "}
-          {t("library.subAgents.enabled")} {enabledCount}
+          {t("library.subAgents.enabled")}: {enabledCount}
         </span>
+        {toolbarSlot ? (
+          <div className="flex flex-1 flex-nowrap items-center justify-end gap-2 overflow-x-auto">
+            {toolbarSlot}
+          </div>
+        ) : null}
       </div>
 
       <div className="space-y-3">

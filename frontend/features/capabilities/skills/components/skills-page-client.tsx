@@ -3,7 +3,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 
-import { SkillsHeader } from "@/features/capabilities/skills/components/skills-header";
 import { SkillsGrid } from "@/features/capabilities/skills/components/skills-grid";
 import { SkillImportDialog } from "@/features/capabilities/skills/components/skill-import-dialog";
 import { useSkillCatalog } from "@/features/capabilities/skills/hooks/use-skill-catalog";
@@ -13,6 +12,9 @@ import { usePagination } from "@/hooks/use-pagination";
 import { skillsService } from "@/features/capabilities/skills/services/skills-service";
 import { useT } from "@/lib/i18n/client";
 import { CapabilityContentShell } from "@/features/capabilities/components/capability-content-shell";
+import { HeaderSearchInput } from "@/components/shared/header-search-input";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -62,14 +64,28 @@ export function SkillsPageClient() {
     [installs, refresh, t],
   );
 
+  const toolbarSlot = (
+    <>
+      <HeaderSearchInput
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder={t("library.skillsPage.searchPlaceholder")}
+        className="w-full md:w-64"
+      />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-2 md:w-auto"
+        onClick={() => setImportOpen(true)}
+      >
+        <Search className="size-4" />
+        {t("library.skillsImport.title")}
+      </Button>
+    </>
+  );
+
   return (
     <>
-      <SkillsHeader
-        onImport={() => setImportOpen(true)}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
-
       <div className="flex flex-1 flex-col overflow-hidden">
         <PullToRefresh onRefresh={refresh} isLoading={isLoading}>
           <CapabilityContentShell>
@@ -90,7 +106,7 @@ export function SkillsPageClient() {
                 onUninstall={uninstallSkill}
                 onToggleEnabled={setEnabled}
                 onBatchToggle={handleBatchToggle}
-                totalCount={filteredSkills.length}
+                toolbarSlot={toolbarSlot}
               />
             </PaginatedGrid>
           </CapabilityContentShell>

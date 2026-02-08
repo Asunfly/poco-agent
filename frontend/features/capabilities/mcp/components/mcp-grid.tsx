@@ -26,7 +26,7 @@ interface McpGridProps {
   onUninstall?: (serverId: number, installId: number) => void;
   onEditServer?: (server: McpServer) => void;
   onBatchToggle?: (enabled: boolean) => void;
-  totalCount?: number;
+  toolbarSlot?: React.ReactNode;
 }
 
 export function McpGrid({
@@ -38,7 +38,7 @@ export function McpGrid({
   onUninstall,
   onEditServer,
   onBatchToggle,
-  totalCount,
+  toolbarSlot,
 }: McpGridProps) {
   const { t } = useT("translation");
   const installByServerId = React.useMemo(() => {
@@ -63,25 +63,28 @@ export function McpGrid({
         </Alert>
       )}
 
-      {/* Stats bar with batch controls */}
-      <div className="rounded-xl bg-muted/50 px-5 py-3 flex items-center justify-between">
+      {/* Action bar */}
+      <div className="rounded-xl bg-muted/50 px-5 py-3 flex flex-wrap items-center gap-3 md:flex-nowrap md:justify-between">
         <span className="text-sm text-muted-foreground">
-          {t("mcpGrid.availableServers", {
-            count: totalCount ?? servers.length,
-          })}{" "}
-          · {t("mcpGrid.enabledServers", { count: enabledCount })}
+          {t("mcpGrid.enabledServers", { count: enabledCount })}
         </span>
-        {installs.length > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onBatchToggle?.(false)}
-            className="h-7 px-2 text-xs"
-          >
-            <PowerOff className="size-3 mr-1" />
-            {t("mcpGrid.turnOffAll")}
-          </Button>
-        )}
+        <div className="flex flex-1 flex-nowrap items-center justify-end gap-2 overflow-x-auto">
+          {toolbarSlot}
+          {installs.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onBatchToggle?.(false)}
+              className="gap-2"
+              aria-label={t("mcpGrid.turnOffAll")}
+            >
+              <PowerOff className="size-4" />
+              <span className="hidden sm:inline">
+                {t("mcpGrid.turnOffAll")}
+              </span>
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">

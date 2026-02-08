@@ -1,12 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { PanelLeft } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
 import type { CapabilityView } from "@/features/capabilities/hooks/use-capability-views";
-import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
 interface CapabilitiesSidebarProps {
@@ -29,17 +25,7 @@ export function CapabilitiesSidebar({
   onSelect,
   variant = "default",
 }: CapabilitiesSidebarProps) {
-  const { t } = useT("translation");
   const isMobileVariant = variant === "mobile";
-  const { isMobile, setOpenMobile, setOpen } = useSidebar();
-
-  const handleOpenMainSidebar = React.useCallback(() => {
-    if (isMobile) {
-      setOpenMobile(true);
-      return;
-    }
-    setOpen(true);
-  }, [isMobile, setOpen, setOpenMobile]);
 
   const handleClick = React.useCallback(
     (viewId: string) => {
@@ -83,7 +69,7 @@ export function CapabilitiesSidebar({
 
   const verticalNavClassName = isMobileVariant
     ? "flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4"
-    : "hidden flex-1 overflow-y-auto px-2 py-2 md:flex md:flex-col";
+    : "hidden flex-1 overflow-y-auto px-2 pb-2 pt-5 md:flex md:flex-col";
 
   return (
     <aside
@@ -92,24 +78,6 @@ export function CapabilitiesSidebar({
         isMobileVariant && "h-full",
       )}
     >
-      <div className="flex h-16 items-center gap-2 px-4">
-        {isMobile ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="-ml-2 text-muted-foreground"
-            onClick={handleOpenMainSidebar}
-            aria-label={t("sidebar.openMain")}
-          >
-            <PanelLeft className="size-5" />
-          </Button>
-        ) : null}
-        <h2 className="truncate text-lg font-semibold tracking-tight">
-          {t("library.title")}
-        </h2>
-      </div>
-
       {!isMobileVariant ? (
         <div className="flex gap-4 overflow-x-auto px-4 py-2 md:hidden">
           {groupedViews.map((group, groupIndex) => (

@@ -3,7 +3,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { toast } from "sonner";
 
-import { McpHeader } from "@/features/capabilities/mcp/components/mcp-header";
 import { McpGrid } from "@/features/capabilities/mcp/components/mcp-grid";
 import { McpSettingsDialog } from "@/features/capabilities/mcp/components/mcp-settings-dialog";
 import { useMcpCatalog } from "@/features/capabilities/mcp/hooks/use-mcp-catalog";
@@ -13,6 +12,9 @@ import { usePagination } from "@/hooks/use-pagination";
 import { mcpService } from "@/features/capabilities/mcp/services/mcp-service";
 import { useT } from "@/lib/i18n/client";
 import { CapabilityContentShell } from "@/features/capabilities/components/capability-content-shell";
+import { HeaderSearchInput } from "@/components/shared/header-search-input";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -71,14 +73,28 @@ export function McpPageClient() {
     return items.find((entry) => entry.server.id === selectedServer.id) || null;
   }, [items, selectedServer]);
 
+  const toolbarSlot = (
+    <>
+      <HeaderSearchInput
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder={t("library.mcpLibrary.searchPlaceholder")}
+        className="w-full md:w-64"
+      />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-2"
+        onClick={() => setIsCreating(true)}
+      >
+        <Plus className="size-4" />
+        {t("library.mcpLibrary.header.add")}
+      </Button>
+    </>
+  );
+
   return (
     <>
-      <McpHeader
-        onAddMcp={() => setIsCreating(true)}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
-
       <div className="flex flex-1 flex-col overflow-hidden">
         <PullToRefresh onRefresh={refresh} isLoading={isLoading}>
           <CapabilityContentShell>
@@ -99,7 +115,7 @@ export function McpPageClient() {
                 onUninstall={uninstallServer}
                 onEditServer={(server) => setSelectedServer(server)}
                 onBatchToggle={handleBatchToggle}
-                totalCount={filteredServers.length}
+                toolbarSlot={toolbarSlot}
               />
             </PaginatedGrid>
           </CapabilityContentShell>

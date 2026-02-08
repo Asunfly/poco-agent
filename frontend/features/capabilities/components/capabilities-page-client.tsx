@@ -2,9 +2,12 @@
 
 import * as React from "react";
 import { Suspense } from "react";
+import { ChevronLeft } from "lucide-react";
 import { CapabilitiesLayoutProvider } from "@/features/capabilities/components/capabilities-layout-context";
+import { Button } from "@/components/ui/button";
 import type { CapabilitiesLayoutContextValue } from "@/features/capabilities/components/capabilities-layout-context";
 import { CapabilitiesSidebar } from "@/features/capabilities/components/capabilities-sidebar";
+import { CapabilitiesLibraryHeader } from "@/features/capabilities/components/capabilities-library-header";
 import { useCapabilityViews } from "@/features/capabilities/hooks/use-capability-views";
 import {
   consumePendingCapabilityView,
@@ -107,8 +110,36 @@ export function CapabilitiesPageClient() {
     );
   };
 
+  const showMobileBack = !isDesktop && isMobileDetailVisible;
+  const headerTitle = showMobileBack
+    ? (activeView?.label ?? t("library.title"))
+    : t("library.title");
+  const headerSubtitle = showMobileBack
+    ? (activeView?.description ?? undefined)
+    : t("library.subtitle");
+  const backLabel = t("library.mobile.back");
+  const mobileBackButton = showMobileBack ? (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="text-muted-foreground"
+      aria-label={backLabel}
+      title={backLabel}
+      onClick={() => setIsMobileDetailVisible(false)}
+    >
+      <ChevronLeft className="size-4" />
+    </Button>
+  ) : null;
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
+      <CapabilitiesLibraryHeader
+        mobileLeading={mobileBackButton ?? undefined}
+        hideSidebarTrigger={showMobileBack}
+        title={headerTitle}
+        subtitle={headerSubtitle}
+      />
       <div className="hidden min-h-0 flex-1 md:grid md:grid-cols-[240px_minmax(0,1fr)]">
         <CapabilitiesSidebar
           views={views}

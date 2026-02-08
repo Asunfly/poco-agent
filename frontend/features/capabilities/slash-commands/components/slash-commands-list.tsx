@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Settings, Trash2 } from "lucide-react";
 
 import { useT } from "@/lib/i18n/client";
@@ -28,6 +29,7 @@ interface SlashCommandsListProps {
   onToggleEnabled?: (commandId: number, enabled: boolean) => void;
   onEdit?: (command: SlashCommand) => void;
   onDelete?: (command: SlashCommand) => void;
+  toolbarSlot?: React.ReactNode;
 }
 
 export function SlashCommandsList({
@@ -37,18 +39,22 @@ export function SlashCommandsList({
   onToggleEnabled,
   onEdit,
   onDelete,
+  toolbarSlot,
 }: SlashCommandsListProps) {
   const { t } = useT("translation");
-
   const enabledCount = commands.filter((c) => c.enabled).length;
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl bg-muted/50 px-5 py-3">
+      <div className="rounded-xl bg-muted/50 px-5 py-3 flex flex-wrap items-center gap-3 md:flex-nowrap md:justify-between">
         <span className="text-sm text-muted-foreground">
-          {t("library.slashCommands.summary")} {commands.length} ·{" "}
-          {t("library.slashCommands.enabled")} {enabledCount}
+          {t("library.slashCommands.enabled")}: {enabledCount}
         </span>
+        {toolbarSlot ? (
+          <div className="flex flex-1 flex-nowrap items-center justify-end gap-2 overflow-x-auto">
+            {toolbarSlot}
+          </div>
+        ) : null}
       </div>
 
       <div className="space-y-3">

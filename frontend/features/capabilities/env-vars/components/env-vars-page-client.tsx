@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { EnvVarsHeader } from "@/features/capabilities/env-vars/components/env-vars-header";
 import { EnvVarsGrid } from "@/features/capabilities/env-vars/components/env-vars-grid";
 import {
   AddEnvVarDialog,
@@ -25,17 +24,15 @@ export function EnvVarsPageClient() {
   >(undefined);
   const envVarStore = useEnvVarsStore();
 
+  const openCreateDialog = () => {
+    setDialogMode("create");
+    setDialogInitialKey(undefined);
+    setDialogInitialDesc(undefined);
+    setIsAddDialogOpen(true);
+  };
+
   return (
     <>
-      <EnvVarsHeader
-        onAddClick={() => {
-          setDialogMode("create");
-          setDialogInitialKey(undefined);
-          setDialogInitialDesc(undefined);
-          setIsAddDialogOpen(true);
-        }}
-      />
-
       <div className="flex flex-1 flex-col overflow-hidden">
         <PullToRefresh
           onRefresh={envVarStore.refreshEnvVars}
@@ -46,6 +43,7 @@ export function EnvVarsPageClient() {
               envVars={envVarStore.envVars}
               savingKey={envVarStore.savingEnvKey}
               isLoading={envVarStore.isLoading}
+              onAddClick={openCreateDialog}
               onDelete={(id) => {
                 envVarStore.removeEnvVar(id);
               }}

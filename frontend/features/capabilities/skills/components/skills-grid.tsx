@@ -26,7 +26,7 @@ interface SkillsGridProps {
   onUninstall?: (installId: number) => void;
   onToggleEnabled?: (installId: number, enabled: boolean) => void;
   onBatchToggle?: (enabled: boolean) => void;
-  totalCount?: number;
+  toolbarSlot?: React.ReactNode;
 }
 
 export function SkillsGrid({
@@ -38,7 +38,7 @@ export function SkillsGrid({
   onUninstall,
   onToggleEnabled,
   onBatchToggle,
-  totalCount,
+  toolbarSlot,
 }: SkillsGridProps) {
   const { t } = useT("translation");
 
@@ -50,7 +50,6 @@ export function SkillsGrid({
     return map;
   }, [installs]);
 
-  const installedCount = installs.length;
   const enabledCount = installs.filter((i) => i.enabled).length;
 
   return (
@@ -65,25 +64,25 @@ export function SkillsGrid({
         </Alert>
       )}
 
-      {/* Stats bar with batch controls */}
-      <div className="rounded-xl bg-muted/50 px-5 py-3 flex items-center justify-between">
+      {/* Action bar */}
+      <div className="rounded-xl bg-muted/50 px-5 py-3 flex flex-wrap items-center gap-3 md:flex-nowrap md:justify-between">
         <span className="text-sm text-muted-foreground">
-          {t("library.skillsManager.stats.available")}:{" "}
-          {totalCount ?? skills.length} ·{" "}
-          {t("library.skillsManager.stats.installed")}: {installedCount} ·{" "}
           {t("library.skillsManager.stats.enabled")}: {enabledCount}
         </span>
-        {installs.length > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onBatchToggle?.(false)}
-            className="h-7 px-2 text-xs"
-          >
-            <PowerOff className="size-3 mr-1" />
-            {t("skillsGrid.turnOffAll")}
-          </Button>
-        )}
+        <div className="flex flex-1 flex-nowrap items-center justify-end gap-2 overflow-x-auto">
+          {toolbarSlot}
+          {installs.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onBatchToggle?.(false)}
+              className="gap-2"
+            >
+              <PowerOff className="size-4" />
+              {t("skillsGrid.turnOffAll")}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">

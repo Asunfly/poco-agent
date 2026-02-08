@@ -1,15 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { Save, Trash2 } from "lucide-react";
 
 import { useT } from "@/lib/i18n/client";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 import { useCustomInstructionsStore } from "@/features/capabilities/personalization/hooks/use-custom-instructions-store";
-import { PersonalizationHeader } from "@/features/capabilities/personalization/components/personalization-header";
 import { CapabilityContentShell } from "@/features/capabilities/components/capability-content-shell";
 
 export function PersonalizationPageClient() {
@@ -40,51 +38,40 @@ export function PersonalizationPageClient() {
   }, [t]);
 
   const handleSave = React.useCallback(async () => {
-    await store.save({ enabled, content });
+    setEnabled(true);
+    await store.save({ enabled: true, content });
     setInitialized(false);
-  }, [content, enabled, store]);
+  }, [content, store]);
 
   const handleClear = React.useCallback(async () => {
+    setEnabled(false);
+    setContent("");
     await store.clear();
     setInitialized(false);
   }, [store]);
 
+  const handleInsertTemplate = React.useCallback(() => {
+    if (content.trim().length > 0) return;
+    setContent(t("library.personalization.customInstructions.editor.template"));
+  }, [content, t]);
+
+  const actionsDisabled = store.isLoading || store.isSaving;
+  const canSave = content.trim().length > 0;
+
   return (
     <div className="flex flex-1 flex-col min-h-0">
-      <PersonalizationHeader
-        onSave={handleSave}
-        onClear={handleClear}
-        isSaving={store.isSaving}
-        isLoading={store.isLoading}
-      />
-
       <CapabilityContentShell className="overflow-auto">
         <div className="rounded-xl border border-border bg-card p-5">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="text-base font-medium">
               {t("library.personalization.customInstructions.title")}
+              <p className="text-xs text-muted-foreground">
+                {t("library.personalization.customInstructions.description")}
+              </p>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (content.trim().length > 0) return;
-                  setContent(
-                    t(
-                      "library.personalization.customInstructions.editor.template",
-                    ),
-                  );
-                }}
-                disabled={store.isLoading || store.isSaving}
-              >
-                {t(
-                  "library.personalization.customInstructions.editor.insertTemplate",
-                )}
-              </Button>
-
-              <Label className="text-sm text-muted-foreground">
+            <div className="flex w-full flex-nowrap items-center justify-end gap-2 overflow-x-auto sm:w-auto">
+              <span className="text-xs text-muted-foreground shrink-0">
                 {isEffectiveEnabled
                   ? t(
                       "library.personalization.customInstructions.status.enabled",
@@ -92,12 +79,31 @@ export function PersonalizationPageClient() {
                   : t(
                       "library.personalization.customInstructions.status.disabled",
                     )}
-              </Label>
-              <Switch
-                checked={enabled}
-                onCheckedChange={setEnabled}
-                disabled={store.isLoading || store.isSaving}
-              />
+              </span>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                  onClick={handleClear}
+                  aria-label={t("library.personalization.header.clear")}
+                  title={t("library.personalization.header.clear")}
+                  disabled={actionsDisabled}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                  onClick={handleSave}
+                  aria-label={t("library.personalization.header.save")}
+                  title={t("library.personalization.header.save")}
+                  disabled={actionsDisabled || !canSave}
+                >
+                  <Save className="size-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -106,11 +112,22 @@ export function PersonalizationPageClient() {
             onChange={(e) => setContent(e.target.value)}
             placeholder={emptyPlaceholder}
             className="mt-4 min-h-[360px] font-mono text-sm"
-            disabled={store.isLoading || store.isSaving}
+            disabled={actionsDisabled}
           />
 
-          <div className="mt-2 text-xs text-muted-foreground">
-            {t("library.personalization.customInstructions.hintSecrets")}
+          <div className="mt-3 flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p>{t("library.personalization.customInstructions.hintSecrets")}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleInsertTemplate}
+              disabled={actionsDisabled}
+              className="w-full sm:w-auto"
+            >
+              {t(
+                "library.personalization.customInstructions.editor.insertTemplate",
+              )}
+            </Button>
           </div>
         </div>
       </CapabilityContentShell>

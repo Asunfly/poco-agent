@@ -6,6 +6,7 @@ import {
   CircleOff,
   Loader2,
   Pencil,
+  Plus,
   Trash2,
   User,
   Wrench,
@@ -27,6 +28,7 @@ interface EnvVarsGridProps {
   onDelete?: (id: number) => void;
   onEdit?: (envVar: EnvVar) => void;
   onOverrideSystem?: (key: string) => void;
+  onAddClick?: () => void;
 }
 
 function EnvVarsSection({
@@ -61,6 +63,7 @@ export function EnvVarsGrid({
   onDelete,
   onEdit,
   onOverrideSystem,
+  onAddClick,
 }: EnvVarsGridProps) {
   const { t } = useT("translation");
   const vars = propEnvVars?.length ? propEnvVars : EMPTY_ENV_VARS;
@@ -97,6 +100,28 @@ export function EnvVarsGrid({
 
   return (
     <div className="space-y-8">
+      <div className="rounded-xl bg-muted/50 px-5 py-3 flex flex-wrap items-center gap-3 md:flex-nowrap md:justify-between">
+        <span className="text-sm text-muted-foreground">
+          {t("library.envVars.scope.system")}: {systemVars.length} ·{" "}
+          {t("library.envVars.scope.user")}: {userVars.length}
+        </span>
+        {onAddClick ? (
+          <div className="flex flex-1 flex-nowrap items-center justify-end gap-2 overflow-x-auto md:w-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              onClick={onAddClick}
+              aria-label={t("library.envVars.header.add")}
+            >
+              <Plus className="size-4" />
+              <span className="hidden sm:inline">
+                {t("library.envVars.header.add")}
+              </span>
+            </Button>
+          </div>
+        ) : null}
+      </div>
       {systemVars.length > 0 && (
         <EnvVarsSection
           title={t("library.envVars.scope.system")}
