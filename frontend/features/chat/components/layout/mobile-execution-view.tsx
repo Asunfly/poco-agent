@@ -115,17 +115,20 @@ export function MobileExecutionView({
                 className="h-full min-h-0 flex flex-col"
               >
                 <div className="px-3 pt-3">
-                  <TabsList>
-                    <TabsTrigger value="computer">
+                  <TabsList className="min-w-0 max-w-full overflow-hidden">
+                    <TabsTrigger value="computer" className="min-w-0 px-2">
                       <Monitor className="size-4" />
                       {t("mobile.computer")}
                       {session?.status && isSessionActive ? (
-                        <Badge variant="secondary" className="ml-1">
+                        <Badge
+                          variant="secondary"
+                          className="ml-1 hidden sm:inline-flex"
+                        >
                           {t("computer.status.live")}
                         </Badge>
                       ) : null}
                     </TabsTrigger>
-                    <TabsTrigger value="artifacts">
+                    <TabsTrigger value="artifacts" className="min-w-0 px-2">
                       <Layers className="size-4" />
                       {t("mobile.artifacts")}
                     </TabsTrigger>

@@ -13,6 +13,7 @@ interface CapabilitiesSidebarProps {
 }
 
 const GROUP_ORDER: CapabilityView["group"][] = [
+  "featured",
   "primary",
   "secondary",
   "tertiary",

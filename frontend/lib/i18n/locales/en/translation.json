@@ -339,11 +339,13 @@
     },
     "summary": {
       "total": "Total",
+      "totalFiles": "files",
       "added": "Added",
       "modified": "Modified",
       "deleted": "Deleted",
       "renamed": "Renamed",
-      "lineChanges": "line changes"
+      "lineChanges": "line changes",
+      "totalfiles": "files"
     }
   },
   "search": {
@@ -543,7 +545,8 @@
         "updated": "Command updated",
         "deleted": "Command deleted",
         "error": "Action failed"
-      }
+      },
+      "empty": "No commands yet"
     },
     "subAgents": {
       "card": {
@@ -792,9 +795,11 @@
         "installed": "Skill installed",
         "uninstalled": "Skill uninstalled",
         "enabled": "Skill enabled",
-        "disabled": "Skill disabled"
+        "disabled": "Skill disabled",
+        "actionFailed": "Operation failed, please try again later"
       },
-      "empty": "No skills yet"
+      "empty": "No skills yet",
+      "unknownSkill": "Unknown skill"
     },
     "skillsImport": {
       "title": "Import Skills",
@@ -856,7 +861,13 @@
         "discoverError": "Discover failed, please try again later",
         "committed": "Import succeeded",
         "commitError": "Import failed, please try again later",
-        "partialFailed": "Some skills failed to import. Please review the details."
+        "partialFailed": "Some skills failed to import. Please review the details.",
+        "commitTimeout": "Import timed out, please try again later"
+      },
+      "progress": {
+        "title": "Import progress",
+        "value": "Progress",
+        "jobId": "Job ID"
       }
     },
     "mcpLibrary": {
@@ -903,7 +914,19 @@
         "enabled": "MCP server enabled",
         "disabled": "MCP server disabled",
         "uninstalled": "MCP server uninstalled",
-        "error": "Operation failed, please try again"
+        "error": "Operation failed, please try again",
+        "actionFailed": "Operation failed, please try again",
+        "created": "MCP server created",
+        "updated": "MCP server updated"
+      }
+    },
+    "presets": {
+      "title": "Presets",
+      "description": "Manage reusable capability presets"
+    },
+    "presetsPage": {
+      "header": {
+        "title": "Presets"
       }
     }
   },
@@ -945,9 +968,12 @@
     "cancel": "Cancel",
     "create": "Create",
     "delete": "Delete",
+    "edit": "Edit",
     "save": "Save",
+    "saving": "Saving...",
     "confirm": "Confirm",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   },
   "pagination": {
     "previous": "Previous",
@@ -962,6 +988,7 @@
     "sidebar": {
       "account": "Account",
       "settings": "Settings",
+      "models": "Models",
       "usage": "Usage"
     },
     "upgrade": "Upgrade",
@@ -971,10 +998,37 @@
     "dailyRefreshHint": "Refreshes to {{max}} every day at {{time}}",
     "generalSettings": "General Settings",
     "darkMode": "Dark mode",
+    "backend": "Backend",
+    "modelConfigTitle": "Model Configuration",
+    "modelGlm": "GLM-4.7",
+    "modelGlmDescription": "Enable GLM model for task execution",
+    "apiKeys": "API Keys",
+    "openAiApiKey": "OpenAI API Key",
+    "openAiApiKeyHint": "Used for OpenAI-compatible models.",
+    "openAiApiKeyPlaceholder": "Enter your OpenAI API key",
+    "openAiBaseUrl": "OpenAI Base URL",
+    "openAiBaseUrlHint": "Override the default OpenAI API endpoint.",
+    "openAiBaseUrlPlaceholder": "https://api.openai.com/v1",
+    "anthropicApiKey": "Anthropic API Key",
+    "anthropicApiKeyHint": "Used for Anthropic-compatible models.",
+    "anthropicApiKeyPlaceholder": "Enter your Anthropic API key",
+    "anthropicBaseUrl": "Anthropic Base URL",
+    "anthropicBaseUrlHint": "Override the default Anthropic API endpoint.",
+    "anthropicBaseUrlPlaceholder": "https://api.anthropic.com",
+    "claudeCode": "Claude Code",
     "language": "Language",
-    "simplifiedChinese": "Simplified Chinese",
+    "english": "English",
+    "simplifiedChinese": "简体中文",
     "noUsageData": "No usage data yet",
-    "getHelp": "Get Help"
+    "getHelp": "Get Help",
+    "getHelpUrl": "https://github.com/poco-ai/poco-agent/issues",
+    "theme": "Theme",
+    "lightMode": "Light mode",
+    "claude": "Claude",
+    "french": "Français",
+    "japanese": "日本語",
+    "german": "Deutsch",
+    "russian": "Русский"
   },
   "validation": {
     "projectNameRequired": "Please enter a project name",
@@ -998,10 +1052,13 @@
     }
   },
   "fileSidebar": {
+    "title": "File List",
     "fileList": "File List",
     "downloadAll": "Download all",
     "noFiles": "No files yet",
+    "downloadStarted": "Starting workspace archive download",
     "downloadStart": "Starting workspace archive download",
+    "archiveNotAvailable": "Archive file not available yet",
     "archiveUnavailable": "Archive file not available yet",
     "downloadFailed": "Download failed"
   },
@@ -1013,6 +1070,8 @@
   "usageTooltip": {
     "currentSession": "Current session:",
     "duration": "Duration:",
+    "tokens": "Tokens",
+    "usageStatistics": "Usage statistics",
     "usageStats": "Usage stats:",
     "today": "Today:",
     "thisWeek": "This week:",
@@ -1020,6 +1079,9 @@
     "durationFormat": "{{mins}}m {{secs}}s"
   },
   "cardNav": {
+    "turnOffAll": "Turn off all",
+    "noMcpInstalled": "No MCP installed",
+    "noSkillsInstalled": "No skills installed",
     "oneClickClose": "Turn off all",
     "notInstalledMcp": "No MCP installed",
     "notInstalledSkill": "No skills installed",
@@ -1029,11 +1091,12 @@
     "connectTools": "Connect your tools to Poco"
   },
   "fileChange": {
+    "previewDisabled": "Executing, preview not available",
     "executingNoPreview": "Executing, preview not available",
     "previewFile": "Preview file",
     "linesAdded": "lines added",
     "linesDeleted": "lines deleted",
-    "totalChanges": "{{total}} line changes",
+    "totalChanges": "{{count}} line changes",
     "viewDiff": "View diff"
   },
   "computerPanel": {
@@ -1052,6 +1115,7 @@
     "documentPreview": "Document preview",
     "workspacePreview": "Workspace file preview",
     "sidebarOpen": "Sidebar open",
+    "sidebarClosed": "Sidebar closed",
     "sidebarClose": "Sidebar close",
     "fileChanges": "File changes",
     "totalFiles": "files"
@@ -1070,6 +1134,8 @@
     "turnOffAll": "Turn off all"
   },
   "mcpSettings": {
+    "configureServer": "Configure MCP Server",
+    "fullJsonConfig": "Complete JSON configuration",
     "mcpName": "MCP Name <span class=\"text-destructive\">*</span>",
     "jsonConfig": "Complete JSON configuration"
   },
@@ -1079,7 +1145,8 @@
     "creditUnlimited": "Unlimited credits"
   },
   "chatInput": {
-    "connect": "Connect"
+    "connect": "Connect",
+    "cancelTask": "Cancel task"
   },
   "chatContainer": {
     "loading": "Loading..."
@@ -1092,6 +1159,15 @@
     "move": "Move"
   },
   "connectors": {
+    "title": "Connectors",
+    "apps": "Apps",
+    "search": "Search connectors",
+    "inDevelopment": "In development",
+    "details": "Details",
+    "connectNow": "Connect now",
+    "connected": "Connected",
+    "enabled": "Enabled",
+    "coreCapabilities": "Core capabilities",
     "gmail": {
       "description": "Draft emails, search conversations, and quickly generate summaries"
     },
@@ -1174,5 +1250,11 @@
     "dailyRefresh": "Daily refresh credits",
     "dailyRefreshHint": "Refreshes to 9999 every day at 00:00",
     "viewUsage": "View usage"
+  },
+  "actions": {
+    "processing": "Processing..."
+  },
+  "filesidebar": {
+    "title": "File List"
   }
 }

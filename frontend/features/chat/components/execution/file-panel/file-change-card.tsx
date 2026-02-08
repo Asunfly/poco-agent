@@ -59,20 +59,6 @@ function getStatusConfig(status: FileChange["status"]) {
 }
 
 /**
- * Truncate file path intelligently
- * Shows filename and truncates middle of long paths
- */
-function truncatePath(path: string, maxLength: number = 50): string {
-  if (path.length <= maxLength) return path;
-
-  // If path is very long, show start...end
-  const startLength = Math.floor(maxLength / 2) - 2;
-  const endLength = Math.ceil(maxLength / 2) - 2;
-
-  return `${path.slice(0, startLength)}...${path.slice(-endLength)}`;
-}
-
-/**
  * Individual file change card
  */
 export function FileChangeCard({
@@ -101,34 +87,34 @@ export function FileChangeCard({
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden w-full">
+    <div className="w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-border bg-card">
       {/* Header with path and status */}
-      <div className="flex items-center gap-3 px-4 py-3 min-w-0">
+      <div className="flex w-full min-w-0 items-center gap-3 overflow-hidden px-4 py-3">
         <StatusIcon className={`size-5 shrink-0 ${statusConfig.color}`} />
 
-        <div className="flex-1 min-w-0">
+        <div className="w-0 flex-1 min-w-0 overflow-hidden">
           {change.status === "renamed" && change.old_path ? (
             <div className="flex items-center gap-2 min-w-0">
               <span
-                className="text-sm font-medium flex-1 min-w-0 truncate text-muted-foreground line-through"
+                className="w-0 flex-1 min-w-0 truncate text-sm font-medium text-muted-foreground line-through"
                 title={change.old_path}
               >
-                {truncatePath(change.old_path)}
+                {change.old_path}
               </span>
               <ArrowRight className="size-3.5 text-muted-foreground shrink-0" />
               <span
-                className="text-sm font-medium flex-1 min-w-0 truncate"
+                className="w-0 flex-1 min-w-0 truncate text-sm font-medium"
                 title={change.path}
               >
-                {truncatePath(change.path)}
+                {change.path}
               </span>
             </div>
           ) : (
             <p
-              className="text-sm font-medium min-w-0 truncate"
+              className="w-full min-w-0 truncate text-sm font-medium"
               title={change.path}
             >
-              {truncatePath(change.path)}
+              {change.path}
             </p>
           )}
         </div>
@@ -160,9 +146,9 @@ export function FileChangeCard({
 
       {/* Line changes statistics */}
       {hasLineChanges && (
-        <div className="flex items-center gap-4 px-4 py-2 bg-muted/30 text-xs">
+        <div className="flex min-w-0 flex-wrap items-center gap-3 overflow-hidden bg-muted/30 px-4 py-2 text-xs">
           {addedLines > 0 && (
-            <div className="flex items-center gap-1.5 text-success shrink-0">
+            <div className="flex min-w-0 items-center gap-1.5 text-success">
               <Plus className="size-3 shrink-0" />
               <span className="font-medium shrink-0">{addedLines}</span>
               <span className="text-muted-foreground shrink-0">
@@ -171,7 +157,7 @@ export function FileChangeCard({
             </div>
           )}
           {deletedLines > 0 && (
-            <div className="flex items-center gap-1.5 text-destructive shrink-0">
+            <div className="flex min-w-0 items-center gap-1.5 text-destructive">
               <Minus className="size-3 shrink-0" />
               <span className="font-medium shrink-0">{deletedLines}</span>
               <span className="text-muted-foreground shrink-0">
@@ -179,7 +165,7 @@ export function FileChangeCard({
               </span>
             </div>
           )}
-          <div className="ml-auto text-muted-foreground shrink-0">
+          <div className="text-muted-foreground sm:ml-auto">
             {t("fileChange.totalChanges", { count: totalChanges })}
           </div>
         </div>

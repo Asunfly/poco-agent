@@ -88,7 +88,7 @@ export const MarkdownPre = ({ node, children, ...props }: MarkdownPreProps) => {
   };
 
   return (
-    <div className="relative group my-4 overflow-hidden rounded-xl border bg-muted/40">
+    <div className="relative group my-4 w-full min-w-0 max-w-full overflow-hidden rounded-xl border bg-muted/40">
       <div className="absolute right-2 top-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
         <Button
           size="icon"
@@ -99,7 +99,7 @@ export const MarkdownPre = ({ node, children, ...props }: MarkdownPreProps) => {
           {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
         </Button>
       </div>
-      <div className="overflow-x-auto bg-background/80">
+      <div className="max-w-full overflow-hidden bg-background/80">
         <SyntaxHighlighter
           language={language}
           style={syntaxTheme}

@@ -143,7 +143,9 @@ export function ArtifactsPanel({
       <div
         className={cn(
           "flex-1 min-h-0 grid grid-cols-1 gap-0 transition-all duration-200 overflow-hidden",
-          isSidebarCollapsed ? "md:grid-cols-1" : "md:grid-cols-[2fr_1fr]",
+          isSidebarCollapsed
+            ? "md:grid-cols-1"
+            : "md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]",
         )}
       >
         <div className="min-w-0 border-b border-border/60 bg-background md:border-b-0 overflow-hidden">
@@ -154,7 +156,7 @@ export function ArtifactsPanel({
           </div>
         </div>
         {!isSidebarCollapsed && (
-          <div className="min-w-0 border-t border-border/60 bg-muted/30 md:border-t-0">
+          <div className="h-full w-full min-h-0 min-w-0 overflow-hidden border-t border-border/60 bg-muted/30 md:border-t-0">
             <FileSidebar
               files={files}
               onFileSelect={(file) => {

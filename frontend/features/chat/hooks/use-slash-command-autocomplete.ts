@@ -8,8 +8,8 @@ import {
   type RefObject,
 } from "react";
 
-import { slashCommandsService } from "@/features/slash-commands/services/slash-commands-service";
-import type { SlashCommand } from "@/features/slash-commands/types";
+import { slashCommandsService } from "@/features/capabilities/slash-commands/services/slash-commands-service";
+import type { SlashCommand } from "@/features/capabilities/slash-commands/types";
 
 export type SlashCommandSuggestionSource = "builtin" | "custom";
 

@@ -47,6 +47,7 @@ import {
 } from "@/features/home/components/run-schedule-dialog";
 import { useSlashCommandAutocomplete } from "@/features/chat/hooks/use-slash-command-autocomplete";
 import { useAppShell } from "@/components/shared/app-shell-context";
+import { setPendingCapabilityView } from "@/features/capabilities/lib/capability-view-state";
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
@@ -163,8 +164,12 @@ export function TaskComposer({
 
   const envVarsHref = React.useMemo(() => {
     const clean = (lng || "").trim();
-    return clean ? `/${clean}/capabilities/env-vars` : "/capabilities/env-vars";
+    return clean ? `/${clean}/capabilities` : "/capabilities";
   }, [lng]);
+
+  const handleOpenEnvVars = React.useCallback(() => {
+    setPendingCapabilityView("env");
+  }, []);
 
   const derivedProjectName = React.useMemo(() => {
     const url = repoUrl.trim();
@@ -522,6 +527,7 @@ export function TaskComposer({
                   </Label>
                   <a
                     href={envVarsHref}
+                    onClick={handleOpenEnvVars}
                     className="text-xs text-primary hover:underline"
                   >
                     {t("hero.repo.goToEnvVars")}

@@ -432,14 +432,16 @@ export function ComputerPanel({
       }
 
       return (
-        <div className="h-full w-full bg-muted/30 flex items-center justify-center">
+        <div className="flex h-full w-full min-h-0 min-w-0 items-center justify-center overflow-hidden bg-muted/30">
           {selectedBrowserUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={selectedBrowserUrl}
-              alt={t("computer.browser.screenshotAlt")}
-              className="w-full h-full object-contain"
-            />
+            <div className="flex h-full w-full min-h-0 min-w-0 items-center justify-center p-2 sm:p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedBrowserUrl}
+                alt={t("computer.browser.screenshotAlt")}
+                className="block max-h-full max-w-full min-h-0 min-w-0 object-contain"
+              />
+            </div>
           ) : selectedBrowserUrl === null ? (
             <div className="text-sm text-muted-foreground">
               {t("computer.browser.screenshotUnavailable")}
@@ -532,103 +534,112 @@ export function ComputerPanel({
   };
 
   const controls = (
-    <div className="flex items-center gap-2">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={() => goToIndex(0)}
-        disabled={replayFrames.length === 0 || selectedIndex <= 0}
-        title={t("computer.replay.controls.first")}
-        aria-label={t("computer.replay.controls.first")}
-        className="shrink-0"
-      >
-        <ChevronsLeft className="size-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={() => goToIndex(selectedIndex - 1)}
-        disabled={!canGoPrev}
-        title={t("computer.replay.controls.prev")}
-        aria-label={t("computer.replay.controls.prev")}
-        className="shrink-0"
-      >
-        <ChevronLeft className="size-4" />
-      </Button>
+    <div className="min-w-0 space-y-1">
+      <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={() => goToIndex(0)}
+          disabled={replayFrames.length === 0 || selectedIndex <= 0}
+          title={t("computer.replay.controls.first")}
+          aria-label={t("computer.replay.controls.first")}
+          className="shrink-0"
+        >
+          <ChevronsLeft className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={() => goToIndex(selectedIndex - 1)}
+          disabled={!canGoPrev}
+          title={t("computer.replay.controls.prev")}
+          aria-label={t("computer.replay.controls.prev")}
+          className="shrink-0"
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={() => {
-          if (replayFrames.length === 0) return;
-          setIsPlaying(!isPlaying);
-        }}
-        disabled={replayFrames.length === 0}
-        title={
-          isPlaying
-            ? t("computer.replay.controls.pause")
-            : t("computer.replay.controls.play")
-        }
-        aria-label={
-          isPlaying
-            ? t("computer.replay.controls.pause")
-            : t("computer.replay.controls.play")
-        }
-        className="shrink-0"
-      >
-        {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
-      </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={() => {
+            if (replayFrames.length === 0) return;
+            setIsPlaying(!isPlaying);
+          }}
+          disabled={replayFrames.length === 0}
+          title={
+            isPlaying
+              ? t("computer.replay.controls.pause")
+              : t("computer.replay.controls.play")
+          }
+          aria-label={
+            isPlaying
+              ? t("computer.replay.controls.pause")
+              : t("computer.replay.controls.play")
+          }
+          className="shrink-0"
+        >
+          {isPlaying ? (
+            <Pause className="size-4" />
+          ) : (
+            <Play className="size-4" />
+          )}
+        </Button>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={() => goToIndex(selectedIndex + 1)}
-        disabled={!canGoNext}
-        title={t("computer.replay.controls.next")}
-        aria-label={t("computer.replay.controls.next")}
-        className="shrink-0"
-      >
-        <ChevronRight className="size-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={() => {
-          if (replayFrames.length === 0) return;
-          setIsPlaying(false);
-          setFollowLatest(true);
-          const last = replayFrames[replayFrames.length - 1];
-          if (last) setSelectedFrameId(last.execution.id);
-        }}
-        disabled={
-          replayFrames.length === 0 || selectedIndex >= replayFrames.length - 1
-        }
-        title={t("computer.replay.controls.latest")}
-        aria-label={t("computer.replay.controls.latest")}
-        className="shrink-0"
-      >
-        <ChevronsRight className="size-4" />
-      </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={() => goToIndex(selectedIndex + 1)}
+          disabled={!canGoNext}
+          title={t("computer.replay.controls.next")}
+          aria-label={t("computer.replay.controls.next")}
+          className="shrink-0"
+        >
+          <ChevronRight className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={() => {
+            if (replayFrames.length === 0) return;
+            setIsPlaying(false);
+            setFollowLatest(true);
+            const last = replayFrames[replayFrames.length - 1];
+            if (last) setSelectedFrameId(last.execution.id);
+          }}
+          disabled={
+            replayFrames.length === 0 ||
+            selectedIndex >= replayFrames.length - 1
+          }
+          title={t("computer.replay.controls.latest")}
+          aria-label={t("computer.replay.controls.latest")}
+          className="shrink-0"
+        >
+          <ChevronsRight className="size-4" />
+        </Button>
 
-      <Slider
-        min={0}
-        max={Math.max(0, replayFrames.length - 1)}
-        value={[Math.max(0, selectedIndex)]}
-        onValueChange={(value) => {
-          const nextIndex = value[0] ?? 0;
-          goToIndex(nextIndex);
-        }}
-        disabled={replayFrames.length <= 1}
-        className="flex-1 min-w-0 ml-2"
-      />
+        <div className="min-w-0 flex-1 pl-1">
+          <Slider
+            min={0}
+            max={Math.max(0, replayFrames.length - 1)}
+            value={[Math.max(0, selectedIndex)]}
+            onValueChange={(value) => {
+              const nextIndex = value[0] ?? 0;
+              goToIndex(nextIndex);
+            }}
+            disabled={replayFrames.length <= 1}
+            className="w-full min-w-0"
+          />
+        </div>
+      </div>
 
       {executions.length >= 2000 ? (
-        <div className="text-[11px] text-muted-foreground shrink-0">
+        <div className="truncate text-[11px] text-muted-foreground">
           {t("computer.replay.limitHint", { limit: "2000" })}
         </div>
       ) : null}
@@ -643,7 +654,7 @@ export function ComputerPanel({
         type="button"
         onClick={() => setReplayFilter("all")}
         className={cn(
-          "flex-1 min-h-[100px] w-9 justify-center px-2 py-1 rounded-md transition-colors text-xs leading-tight",
+          "flex-1 min-h-[100px] min-w-0 justify-center px-2 py-1 rounded-md transition-colors text-xs leading-tight",
           replayFilter === "all"
             ? "bg-accent text-accent-foreground"
             : "hover:bg-muted/50 text-muted-foreground",
@@ -655,7 +666,7 @@ export function ComputerPanel({
         type="button"
         onClick={() => setReplayFilter("browser")}
         className={cn(
-          "h-[60px] w-9 justify-center px-2 rounded-md transition-colors flex items-center justify-center",
+          "h-[60px] min-w-0 justify-center px-2 rounded-md transition-colors flex items-center justify-center",
           replayFilter === "browser"
             ? "bg-accent text-accent-foreground"
             : "hover:bg-muted/50 text-muted-foreground",
@@ -667,7 +678,7 @@ export function ComputerPanel({
         type="button"
         onClick={() => setReplayFilter("terminal")}
         className={cn(
-          "h-[60px] w-9 justify-center px-2 rounded-md transition-colors flex items-center justify-center",
+          "h-[60px] min-w-0 justify-center px-2 rounded-md transition-colors flex items-center justify-center",
           replayFilter === "terminal"
             ? "bg-accent text-accent-foreground"
             : "hover:bg-muted/50 text-muted-foreground",
@@ -783,7 +794,7 @@ export function ComputerPanel({
                   }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className={cn(
-                    "w-full flex items-center gap-2 rounded-md px-2 py-2 text-left transition-colors h-10",
+                    "h-10 w-full min-w-0 max-w-full overflow-hidden rounded-md px-2 py-2 text-left transition-colors flex items-center gap-2",
                     isSelected
                       ? "bg-accent text-accent-foreground"
                       : "hover:bg-muted/50",
@@ -798,13 +809,13 @@ export function ComputerPanel({
                     {statusIcon}
                     {kindIcon}
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="w-0 flex-1 min-w-0 overflow-hidden">
                     <div className="text-xs font-mono truncate leading-tight">
                       {frame.label}
                     </div>
                   </div>
                   {durationSec && (
-                    <div className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                    <div className="shrink-0 whitespace-nowrap text-xs text-muted-foreground tabular-nums">
                       {durationSec}s
                     </div>
                   )}
@@ -819,32 +830,34 @@ export function ComputerPanel({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col min-w-0 overflow-hidden">
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
       <PanelHeader
         icon={Monitor}
         title={t("computer.title")}
         description={t("computer.description")}
         content={
           headerAction ? (
-            <div className="flex items-center">{headerAction}</div>
+            <div className="flex min-w-0 items-center overflow-hidden">
+              {headerAction}
+            </div>
           ) : undefined
         }
       />
       <div className="flex-1 min-h-0 overflow-hidden p-3 sm:p-4">
         <div className="h-full min-h-0 flex flex-col gap-3">
-          <div className="flex-1 min-h-0 rounded-xl border bg-card overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-hidden rounded-xl border bg-card">
             {viewer}
           </div>
 
           {controls}
 
           {hasMultipleTypes ? (
-            <div className="h-[220px] rounded-xl border bg-card flex">
-              <div className="border-r p-1">{filterToggleGroup}</div>
+            <div className="h-[220px] min-w-0 overflow-hidden rounded-xl border bg-card flex">
+              <div className="shrink-0 border-r p-1">{filterToggleGroup}</div>
               <div className="flex-1 min-w-0">{timelineList}</div>
             </div>
           ) : (
-            <div className="h-[220px] rounded-xl border bg-card">
+            <div className="h-[220px] min-w-0 overflow-hidden rounded-xl border bg-card">
               {timelineList}
             </div>
           )}

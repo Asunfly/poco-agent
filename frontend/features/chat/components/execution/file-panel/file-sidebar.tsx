@@ -103,29 +103,22 @@ function FileTreeItem({
       onSelect(node);
     }
   };
-
-  const INDENT_CLASSES = [
-    "pl-2",
-    "pl-5",
-    "pl-8",
-    "pl-12",
-    "pl-14",
-    "pl-16",
-    "pl-20",
-  ];
-  const indentClass =
-    INDENT_CLASSES[Math.min(level, INDENT_CLASSES.length - 1)];
+  // Keep indentation inside the row box so nested nodes never exceed sidebar width.
+  const paddingStartRem = 0.5 + Math.min(level, 12) * 0.5;
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 max-w-full basis-full overflow-hidden">
       <div
         className={cn(
-          "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors min-w-0 group/item",
-          indentClass,
+          "group/item box-border flex w-full min-w-0 max-w-full items-center gap-2 overflow-hidden rounded-md py-1.5 transition-colors cursor-pointer",
           selectedId === node.id
             ? "bg-sidebar-accent text-sidebar-accent-foreground"
             : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
         )}
+        style={{
+          paddingInlineStart: `${paddingStartRem}rem`,
+          paddingInlineEnd: "0.5rem",
+        }}
         onClick={handleClick}
       >
         <div className="shrink-0 w-3 flex items-center justify-center">
@@ -145,12 +138,15 @@ function FileTreeItem({
               : "text-sidebar-foreground/70",
           )}
         </span>
-        <span className="text-sm flex-1 min-w-0 truncate" title={node.name}>
+        <span
+          className="block w-0 flex-1 min-w-0 max-w-full truncate text-sm"
+          title={node.name}
+        >
           {node.name}
         </span>
       </div>
       {node.type === "folder" && isExpanded && node.children && (
-        <div className="w-full min-w-0">
+        <div className="w-full min-w-0 max-w-full basis-full overflow-hidden">
           {node.children.map((child) => (
             <FileTreeItem
               key={child.id}
@@ -201,9 +197,9 @@ export function FileSidebar({
   };
 
   return (
-    <aside className="flex h-full min-h-0 min-w-0 flex-col border-l border-border/60 bg-sidebar/60 text-sidebar-foreground">
-      <div className="flex items-center justify-between px-3 py-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/70">
+    <aside className="flex h-full w-full min-h-0 min-w-0 max-w-full flex-col overflow-hidden border-l border-border/60 bg-sidebar/60 text-sidebar-foreground">
+      <div className="flex w-full min-w-0 items-center justify-between overflow-hidden px-3 py-2">
+        <span className="min-w-0 truncate text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/70">
           {t("fileSidebar.title")}
         </span>
         {sessionId && (
@@ -215,8 +211,8 @@ export function FileSidebar({
           </PanelHeaderAction>
         )}
       </div>
-      <ScrollArea className="flex-1 min-h-0">
-        <div className="px-2 py-2 space-y-1 min-w-0 overflow-hidden">
+      <ScrollArea className="h-full w-full flex-1 min-h-0 max-w-full [&_[data-slot=scroll-area-scrollbar]]:hidden [&_[data-slot=scroll-area-viewport]]:w-full [&_[data-slot=scroll-area-viewport]]:overflow-x-hidden [&_[data-slot=scroll-area-viewport]]:scrollbar-hide">
+        <div className="w-full min-w-0 max-w-full space-y-1 overflow-hidden px-2 py-2">
           {files.length === 0 ? (
             <p className="text-xs text-sidebar-foreground/60 px-2 py-1">
               {t("fileSidebar.noFiles")}

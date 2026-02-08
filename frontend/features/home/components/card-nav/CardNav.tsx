@@ -17,14 +17,18 @@ import {
   ChevronRight,
   PowerOff,
 } from "lucide-react";
-import { mcpService } from "@/features/mcp/services/mcp-service";
-import { skillsService } from "@/features/skills/services/skills-service";
-import type { McpServer, UserMcpInstall } from "@/features/mcp/types";
-import { Skill, UserSkillInstall } from "@/features/skills/types";
+import { mcpService } from "@/features/capabilities/mcp/services/mcp-service";
+import { skillsService } from "@/features/capabilities/skills/services/skills-service";
+import type {
+  McpServer,
+  UserMcpInstall,
+} from "@/features/capabilities/mcp/types";
+import { Skill, UserSkillInstall } from "@/features/capabilities/skills/types";
 import { useAppShell } from "@/components/shared/app-shell-context";
 import { cn } from "@/lib/utils";
 import { playMcpInstallSound } from "@/lib/utils/sound";
 import { useT } from "@/lib/i18n/client";
+import { setPendingCapabilityView } from "@/features/capabilities/lib/capability-view-state";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
 import { SkeletonText } from "@/components/ui/skeleton-shimmer";
@@ -379,9 +383,10 @@ export function CardNav({
   };
 
   const handleLabelClick = useCallback(
-    (e: React.MouseEvent, path: string) => {
+    (e: React.MouseEvent, viewId: "mcp" | "skills") => {
       e.stopPropagation();
-      router.push(`/${lng}/${path}?from=home`);
+      setPendingCapabilityView(viewId);
+      router.push(`/${lng}/capabilities`);
     },
     [router, lng],
   );
@@ -489,7 +494,7 @@ export function CardNav({
                   </div>
                   <button
                     className="flex items-center gap-1 bg-transparent border-none cursor-pointer transition-all duration-200 rounded px-2 py-1 -mx-2 -my-1 hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-                    onClick={(e) => handleLabelClick(e, "capabilities/mcp")}
+                    onClick={(e) => handleLabelClick(e, "mcp")}
                     type="button"
                   >
                     <span className="text-base font-semibold tracking-[-0.01em] text-foreground">
@@ -553,7 +558,7 @@ export function CardNav({
                   </div>
                   <button
                     className="flex items-center gap-1 bg-transparent border-none cursor-pointer transition-all duration-200 rounded px-2 py-1 -mx-2 -my-1 hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-                    onClick={(e) => handleLabelClick(e, "capabilities/skills")}
+                    onClick={(e) => handleLabelClick(e, "skills")}
                     type="button"
                   >
                     <span className="text-base font-semibold tracking-[-0.01em] text-foreground">

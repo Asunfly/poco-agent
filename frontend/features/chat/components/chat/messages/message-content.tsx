@@ -64,7 +64,7 @@ export function MessageContent({
   // If content is string, render as before
   if (typeof content === "string") {
     return (
-      <div className="prose prose-base dark:prose-invert max-w-none break-words break-all w-full min-w-0 [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:break-words [&_p]:break-words [&_p]:break-all [&_*]:break-words [&_*]:break-all">
+      <div className="prose prose-base dark:prose-invert w-full min-w-0 max-w-none overflow-hidden break-words break-all [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:break-words [&_p]:break-words [&_p]:break-all [&_*]:break-words [&_*]:break-all">
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
           components={{
@@ -100,7 +100,7 @@ export function MessageContent({
             img: ImgBlock,
             table: ({ children }) => (
               <div className="overflow-x-auto my-4 rounded-lg border border-border">
-                <table className="w-full border-collapse text-sm">
+                <table className="w-full table-fixed border-collapse text-sm">
                   {children}
                 </table>
               </div>
@@ -112,12 +112,12 @@ export function MessageContent({
               <tbody className="divide-y divide-border">{children}</tbody>
             ),
             th: ({ children }) => (
-              <th className="border-b border-border px-4 py-3 text-left font-semibold text-foreground">
+              <th className="border-b border-border px-4 py-3 text-left font-semibold text-foreground break-words">
                 {children}
               </th>
             ),
             td: ({ children }) => (
-              <td className="border-b border-border px-4 py-3 text-foreground">
+              <td className="border-b border-border px-4 py-3 text-foreground break-words">
                 {children}
               </td>
             ),
@@ -157,7 +157,7 @@ export function MessageContent({
   }
 
   return (
-    <div className="space-y-4 w-full min-w-0">
+    <div className="w-full min-w-0 space-y-4 overflow-hidden">
       {groups.map((group, index) => {
         if (group.type === "tool") {
           return (
@@ -199,7 +199,7 @@ export function MessageContent({
           return (
             <div
               key={index}
-              className="prose prose-base dark:prose-invert max-w-none break-words break-all w-full min-w-0 [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:break-words [&_p]:break-words [&_p]:break-all [&_*]:break-words [&_*]:break-all"
+              className="prose prose-base dark:prose-invert w-full min-w-0 max-w-none overflow-hidden break-words break-all [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:break-words [&_p]:break-words [&_p]:break-all [&_*]:break-words [&_*]:break-all"
             >
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -236,7 +236,7 @@ export function MessageContent({
                   img: ImgBlock,
                   table: ({ children }) => (
                     <div className="overflow-x-auto my-4 rounded-lg border border-border">
-                      <table className="w-full border-collapse text-sm">
+                      <table className="w-full table-fixed border-collapse text-sm">
                         {children}
                       </table>
                     </div>
@@ -248,12 +248,12 @@ export function MessageContent({
                     <tbody className="divide-y divide-border">{children}</tbody>
                   ),
                   th: ({ children }) => (
-                    <th className="border-b border-border px-4 py-3 text-left font-semibold text-foreground">
+                    <th className="border-b border-border px-4 py-3 text-left font-semibold text-foreground break-words">
                       {children}
                     </th>
                   ),
                   td: ({ children }) => (
-                    <td className="border-b border-border px-4 py-3 text-foreground">
+                    <td className="border-b border-border px-4 py-3 text-foreground break-words">
                       {children}
                     </td>
                   ),

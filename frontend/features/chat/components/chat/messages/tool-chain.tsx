@@ -209,7 +209,7 @@ function ToolStep({ toolUse, toolResult, isOpen, onToggle }: ToolStepProps) {
               <div className="text-[10px] uppercase text-muted-foreground mb-1 select-none">
                 {t("chat.input")}
               </div>
-              <div className="bg-muted/50 p-2 rounded overflow-x-auto text-foreground/90">
+              <div className="bg-muted/50 p-2 rounded overflow-hidden text-foreground/90">
                 <pre className="whitespace-pre-wrap break-all">
                   {JSON.stringify(toolUse.input, null, 2)}
                 </pre>
@@ -224,7 +224,7 @@ function ToolStep({ toolUse, toolResult, isOpen, onToggle }: ToolStepProps) {
                 </div>
                 <div
                   className={cn(
-                    "p-2 rounded overflow-x-auto text-foreground/90",
+                    "p-2 rounded overflow-hidden text-foreground/90",
                     isError
                       ? "bg-destructive/10 text-destructive border border-destructive/20"
                       : "bg-muted/50",
@@ -243,7 +243,7 @@ function ToolStep({ toolUse, toolResult, isOpen, onToggle }: ToolStepProps) {
                 <div className="text-[10px] uppercase text-muted-foreground mb-1 select-none">
                   {t("chat.subagentTranscript")}
                 </div>
-                <div className="bg-muted/50 p-2 rounded overflow-x-auto text-foreground/90">
+                <div className="bg-muted/50 p-2 rounded overflow-hidden text-foreground/90">
                   <pre className="whitespace-pre-wrap break-all">
                     {toolUse.subagent_transcript.join("\n\n")}
                   </pre>

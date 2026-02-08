@@ -78,9 +78,6 @@ export const API_ENDPOINTS = {
   callback: "/callback",
   callbackHealth: "/callback/health",
 
-  // Schedules
-  schedules: "/schedules",
-
   // Scheduled Tasks
   scheduledTasks: "/scheduled-tasks",
   scheduledTask: (taskId: string) => `/scheduled-tasks/${taskId}`,

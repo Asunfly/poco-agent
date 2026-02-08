@@ -15,6 +15,10 @@ import {
   Trash2,
   X,
   ChevronRight,
+  Settings2,
+  Moon,
+  Sun,
+  Languages,
 } from "lucide-react";
 import {
   Collapsible,
@@ -30,6 +34,8 @@ import {
   closestCorners,
   useDroppable,
 } from "@dnd-kit/core";
+
+import { useTheme } from "next-themes";
 
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -48,11 +54,26 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import type { ProjectItem, TaskHistoryItem } from "@/features/projects/types";
 import { TaskHistoryList } from "./task-history-list";
 import { CollapsibleProjectItem } from "./collapsible-project-item";
 import { useSearchDialog } from "@/features/search/hooks/use-search-dialog";
+import { useSettingsLanguage } from "@/features/settings/hooks/use-settings-language";
+import {
+  useBackendPreference,
+  type BackendOption,
+} from "@/features/settings/hooks/use-backend-preference";
 
 const TOP_NAV_ITEMS = [
   { id: "search", labelKey: "sidebar.search", icon: Search, href: null },
@@ -171,12 +192,31 @@ export function MainSidebar({
   const params = useParams();
   const { toggleSidebar } = useSidebar();
   const { searchKey } = useSearchDialog();
+  const { theme, setTheme } = useTheme();
+  const { currentLanguage, changeLanguage } = useSettingsLanguage();
+  const { backend, setBackend } = useBackendPreference();
 
   const lng = React.useMemo(() => {
     const value = params?.lng;
     if (!value) return undefined;
     return Array.isArray(value) ? value[0] : value;
   }, [params]);
+
+  const handleThemeSelect = React.useCallback(
+    (nextTheme: string) => {
+      if (nextTheme !== "light" && nextTheme !== "dark") return;
+      setTheme(nextTheme);
+    },
+    [setTheme],
+  );
+
+  const handleBackendSelect = React.useCallback(
+    (nextBackend: string) => {
+      if (nextBackend !== "claude-code") return;
+      setBackend(nextBackend as BackendOption);
+    },
+    [setBackend],
+  );
 
   // Selection Mode State
   const [isSelectionMode, setIsSelectionMode] = React.useState(false);
@@ -625,7 +665,7 @@ export function MainSidebar({
             </div>
           ) : (
             /* 底部工具栏 - 正常模式 */
-            <div className="flex items-center justify-start px-1 group-data-[collapsible=icon]:px-0">
+            <div className="flex w-full items-center justify-between px-1 group-data-[collapsible=icon]:px-0">
               <Button
                 variant="ghost"
                 size="icon"
@@ -635,6 +675,93 @@ export function MainSidebar({
               >
                 <SlidersHorizontal className="size-4" />
               </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-muted-foreground hover:bg-sidebar-accent"
+                    title={t("settings.dialogTitle")}
+                  >
+                    <Settings2 className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" side="top" className="w-48">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <Bot className="size-4" />
+                      <span>{t("settings.backend")}</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuRadioGroup
+                        value={backend}
+                        onValueChange={handleBackendSelect}
+                      >
+                        <DropdownMenuRadioItem value="claude-code">
+                          {t("settings.claudeCode")}
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      {theme === "dark" ? (
+                        <Moon className="size-4" />
+                      ) : (
+                        <Sun className="size-4" />
+                      )}
+                      <span>{t("settings.theme")}</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuRadioGroup
+                        value={theme === "dark" ? "dark" : "light"}
+                        onValueChange={handleThemeSelect}
+                      >
+                        <DropdownMenuRadioItem value="light">
+                          {t("settings.lightMode")}
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="dark">
+                          {t("settings.darkMode")}
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <Languages className="size-4" />
+                      <span>{t("settings.language")}</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuRadioGroup
+                        value={currentLanguage}
+                        onValueChange={changeLanguage}
+                      >
+                        <DropdownMenuRadioItem value="en">
+                          {t("settings.english")}
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="zh">
+                          {t("settings.simplifiedChinese")}
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="fr">
+                          {t("settings.french")}
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="ja">
+                          {t("settings.japanese")}
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="de">
+                          {t("settings.german")}
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="ru">
+                          {t("settings.russian")}
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </SidebarFooter>

@@ -193,7 +193,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
     const showCancel = Boolean(onCancel) && canCancel && !hasDraft;
 
     return (
-      <div className="shrink-0 px-4 pb-4 pt-2">
+      <div className="shrink-0 min-w-0 px-4 pb-4 pt-2">
         <input
           type="file"
           ref={fileInputRef}
@@ -201,18 +201,18 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
           onChange={handleFileSelect}
         />
         {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-3 mb-2">
+          <div className="mb-2 flex min-w-0 flex-wrap gap-2 px-3">
             {attachments.map((file, i) => (
               <FileCard
                 key={i}
                 file={file}
                 onRemove={() => removeAttachment(i)}
-                className="w-48 bg-background"
+                className="w-full max-w-48 bg-background"
               />
             ))}
           </div>
         )}
-        <div className="relative flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2">
+        <div className="relative flex w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg border border-border bg-card px-3 py-2">
           {slashAutocomplete.isOpen ? (
             <div className="absolute bottom-full left-0 mb-2 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-md">
               <div className="max-h-64 overflow-auto py-1">
@@ -286,7 +286,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
             placeholder={t("chat.inputPlaceholder")}
             disabled={disabled}
             rows={1}
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-y-auto py-1 scrollbar-hide"
+            className="flex-1 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-y-auto py-1 scrollbar-hide"
             style={{
               minHeight: "2rem",
               maxHeight: "10rem",

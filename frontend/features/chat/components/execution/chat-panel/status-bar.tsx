@@ -16,10 +16,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { mcpService } from "@/features/mcp/services/mcp-service";
-import { skillsService } from "@/features/skills/services/skills-service";
-import type { McpServer } from "@/features/mcp/types";
-import type { Skill } from "@/features/skills/types";
+import { mcpService } from "@/features/capabilities/mcp/services/mcp-service";
+import { skillsService } from "@/features/capabilities/skills/services/skills-service";
+import type { McpServer } from "@/features/capabilities/mcp/types";
+import type { Skill } from "@/features/capabilities/skills/types";
 import type {
   SkillUse,
   McpStatusItem,
@@ -149,13 +149,13 @@ export function StatusBar({
   };
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2.5 border-t border-border bg-muted/20">
+    <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-hidden border-t border-border bg-muted/20 px-4 py-2.5">
       <TooltipProvider delayDuration={200}>
         {/* Browser Card */}
         {hasBrowser && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border/60 hover:border-border hover:shadow-sm transition-all cursor-pointer group">
+          <div className="group flex min-w-0 max-w-full items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-2 transition-all hover:border-border hover:shadow-sm cursor-pointer">
             <AppWindow className="size-3.5 text-foreground group-hover:text-foreground/80 transition-colors" />
-            <span className="text-xs font-medium text-foreground">
+            <span className="min-w-0 truncate text-xs font-medium text-foreground">
               {t("chat.statusBar.browser")}
             </span>
             <Badge
@@ -171,9 +171,9 @@ export function StatusBar({
         {hasSkills && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border/60 hover:border-border hover:shadow-sm transition-all cursor-pointer group">
+              <div className="group flex min-w-0 max-w-full items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-2 transition-all hover:border-border hover:shadow-sm cursor-pointer">
                 <Zap className="size-3.5 text-foreground group-hover:text-foreground/80 transition-colors" />
-                <span className="text-xs font-medium text-foreground">
+                <span className="min-w-0 truncate text-xs font-medium text-foreground">
                   {configuredSkills.length > 0
                     ? t("chat.statusBar.skillsConfigured")
                     : t("chat.statusBar.skillsUsed")}
@@ -210,9 +210,9 @@ export function StatusBar({
         {hasMcp && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border/60 hover:border-border hover:shadow-sm transition-all cursor-pointer group">
+              <div className="group flex min-w-0 max-w-full items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-2 transition-all hover:border-border hover:shadow-sm cursor-pointer">
                 <Server className="size-3.5 text-foreground group-hover:text-foreground/80 transition-colors" />
-                <span className="text-xs font-medium text-foreground">
+                <span className="min-w-0 truncate text-xs font-medium text-foreground">
                   {configuredMcpServers.length > 0
                     ? t("chat.statusBar.mcpConfigured")
                     : t("chat.statusBar.mcp")}

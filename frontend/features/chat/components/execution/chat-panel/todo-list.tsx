@@ -31,17 +31,17 @@ export function TodoList({ todos, progress = 0, currentStep }: TodoListProps) {
       <CardHeader className="py-2.5 px-4">
         <div className="space-y-1.5">
           {/* Title with icon and count */}
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+          <CardTitle className="flex min-w-0 items-center gap-2 text-sm font-semibold">
             <CheckCircle2 className="size-4 text-foreground" />
-            <span className="flex-1">
+            <span className="min-w-0 flex-1 truncate">
               {t("todo.title")}
               {currentStep && (
-                <span className="ml-2 text-xs font-normal text-muted-foreground/70">
+                <span className="ml-2 truncate text-xs font-normal text-muted-foreground/70">
                   - {currentStep}
                 </span>
               )}
             </span>
-            <span className="text-xs text-muted-foreground font-normal">
+            <span className="shrink-0 text-xs font-normal text-muted-foreground">
               {completedCount}/{todos.length} {derivedProgress}%
             </span>
           </CardTitle>
@@ -53,7 +53,7 @@ export function TodoList({ todos, progress = 0, currentStep }: TodoListProps) {
 
       {/* Todo items - auto height */}
       <CardContent className="px-4 pb-3 pt-0">
-        <div className="grid grid-cols-3 gap-x-4 gap-y-1.5">
+        <div className="grid min-w-0 grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-3">
           {todos.map((todo, index) => {
             const isCompleted = todo.status === "completed";
             return (

@@ -5,18 +5,42 @@ import { Suspense } from "react";
 
 import { CapabilitiesSidebar } from "@/features/capabilities/components/capabilities-sidebar";
 import { useCapabilityViews } from "@/features/capabilities/hooks/use-capability-views";
+import {
+  consumePendingCapabilityView,
+  getLastCapabilityView,
+  setLastCapabilityView,
+} from "@/features/capabilities/lib/capability-view-state";
 
 export function CapabilitiesPageClient() {
   const views = useCapabilityViews();
-  const [activeViewId, setActiveViewId] = React.useState<string>(
-    views[0]?.id ?? "skills",
-  );
+  const [activeViewId, setActiveViewId] = React.useState<string>("skills");
 
   React.useEffect(() => {
     if (!views.length) return;
-    if (views.some((view) => view.id === activeViewId)) return;
-    setActiveViewId(views[0]?.id ?? "skills");
-  }, [views, activeViewId]);
+
+    const pendingViewId = consumePendingCapabilityView();
+    if (pendingViewId && views.some((view) => view.id === pendingViewId)) {
+      setActiveViewId(pendingViewId);
+      return;
+    }
+
+    const lastViewId = getLastCapabilityView();
+    if (lastViewId && views.some((view) => view.id === lastViewId)) {
+      setActiveViewId(lastViewId);
+      return;
+    }
+
+    const defaultViewId =
+      views.find((view) => view.id === "skills")?.id ??
+      views[0]?.id ??
+      "skills";
+    setActiveViewId(defaultViewId);
+  }, [views]);
+
+  React.useEffect(() => {
+    if (!activeViewId) return;
+    setLastCapabilityView(activeViewId);
+  }, [activeViewId]);
 
   const activeView = React.useMemo(() => {
     return views.find((view) => view.id === activeViewId) ?? views[0];

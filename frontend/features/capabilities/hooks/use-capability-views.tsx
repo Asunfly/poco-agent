@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { LucideIcon } from "lucide-react";
 import {
+  Sparkles,
   Puzzle,
   Server,
   KeySquare,
@@ -12,18 +13,19 @@ import {
 } from "lucide-react";
 
 import { useT } from "@/lib/i18n/client";
-import { SkillsPageClient } from "@/features/skills/components/skills-page-client";
-import { McpPageClient } from "@/features/mcp/components/mcp-page-client";
-import { EnvVarsPageClient } from "@/features/env-vars/components/env-vars-page-client";
-import { PersonalizationPageClient } from "@/features/personalization/components/personalization-page-client";
-import { SlashCommandsPageClient } from "@/features/slash-commands/components/slash-commands-page-client";
-import { SubAgentsPageClient } from "@/features/sub-agents/components/sub-agents-page-client";
+import { PresetsPageClient } from "@/features/capabilities/presets/components/presets-page-client";
+import { SkillsPageClient } from "@/features/capabilities/skills/components/skills-page-client";
+import { McpPageClient } from "@/features/capabilities/mcp/components/mcp-page-client";
+import { EnvVarsPageClient } from "@/features/capabilities/env-vars/components/env-vars-page-client";
+import { PersonalizationPageClient } from "@/features/capabilities/personalization/components/personalization-page-client";
+import { SlashCommandsPageClient } from "@/features/capabilities/slash-commands/components/slash-commands-page-client";
+import { SubAgentsPageClient } from "@/features/capabilities/sub-agents/components/sub-agents-page-client";
 
 export interface CapabilityView {
   id: string;
   label: string;
   description: string;
-  group: "primary" | "secondary" | "tertiary";
+  group: "featured" | "primary" | "secondary" | "tertiary";
   icon: LucideIcon;
   component: React.ComponentType;
 }
@@ -33,6 +35,14 @@ export function useCapabilityViews(): CapabilityView[] {
 
   return React.useMemo(
     () => [
+      {
+        id: "presets",
+        label: t("library.presets.title"),
+        description: t("library.presets.description"),
+        group: "featured",
+        icon: Sparkles,
+        component: PresetsPageClient,
+      },
       {
         id: "skills",
         label: t("library.skillsStore.title"),

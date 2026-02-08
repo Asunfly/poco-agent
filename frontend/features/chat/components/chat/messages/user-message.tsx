@@ -81,20 +81,25 @@ export function UserMessage({
   }, [textContent]);
 
   return (
-    <div className="flex flex-col items-end w-full gap-2">
+    <div className="flex w-full min-w-0 flex-col items-end gap-2">
       {attachments && attachments.length > 0 && (
-        <div className="max-w-[85%] flex flex-wrap justify-end gap-2">
+        <div className="flex w-full min-w-0 max-w-[85%] flex-wrap justify-end gap-2">
           {attachments.map((file, i) => (
-            <FileCard key={i} file={file} className="w-48" showRemove={false} />
+            <FileCard
+              key={i}
+              file={file}
+              className="w-full max-w-48"
+              showRemove={false}
+            />
           ))}
         </div>
       )}
       {textContent && (
-        <div className="max-w-[85%] flex flex-col items-end gap-2 group">
-          <div className="bg-muted text-foreground rounded-lg px-4 py-2 w-full">
+        <div className="group flex w-full min-w-0 max-w-[85%] flex-col items-end gap-2">
+          <div className="w-full min-w-0 overflow-hidden rounded-lg bg-muted px-4 py-2 text-foreground">
             <p
               ref={observerRef}
-              className={`text-base whitespace-pre-wrap break-words break-all ${
+              className={`text-base whitespace-pre-wrap break-words break-all [overflow-wrap:anywhere] ${
                 shouldCollapse && !isExpanded ? "line-clamp-5" : ""
               }`}
             >

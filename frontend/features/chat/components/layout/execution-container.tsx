@@ -7,7 +7,7 @@ import { ComputerPanel } from "../execution/computer-panel/computer-panel";
 import { MobileExecutionView } from "./mobile-execution-view";
 import { useExecutionSession } from "@/features/chat/hooks/use-execution-session";
 import { useTaskHistoryContext } from "@/features/projects/contexts/task-history-context";
-import { useIsMobile } from "@/lib/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Layers, Loader2, Monitor } from "lucide-react";
 
 import {
@@ -98,17 +98,17 @@ export function ExecutionContainer({ sessionId }: ExecutionContainerProps) {
 
   // Desktop resizable layout
   const tabsSwitch = (
-    <TabsList>
-      <TabsTrigger value="computer">
+    <TabsList className="min-w-0 max-w-full overflow-hidden">
+      <TabsTrigger value="computer" className="min-w-0 px-2">
         <Monitor className="size-4" />
         {t("mobile.computer")}
         {session?.status && isSessionActive ? (
-          <Badge variant="secondary" className="ml-1">
+          <Badge variant="secondary" className="ml-1 hidden lg:inline-flex">
             {t("computer.status.live")}
           </Badge>
         ) : null}
       </TabsTrigger>
-      <TabsTrigger value="artifacts">
+      <TabsTrigger value="artifacts" className="min-w-0 px-2">
         <Layers className="size-4" />
         {t("mobile.artifacts")}
       </TabsTrigger>
@@ -116,11 +116,15 @@ export function ExecutionContainer({ sessionId }: ExecutionContainerProps) {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background select-text">
-      <ResizablePanelGroup direction="horizontal">
+    <div className="flex h-screen min-h-0 min-w-0 overflow-hidden bg-background select-text">
+      <ResizablePanelGroup direction="horizontal" className="min-h-0 min-w-0">
         {/* Left panel - Chat with status cards (45%) */}
-        <ResizablePanel defaultSize={45} minSize={20}>
-          <div className="h-full flex flex-col min-w-0">
+        <ResizablePanel
+          defaultSize={45}
+          minSize={30}
+          className="min-h-0 min-w-0 overflow-hidden"
+        >
+          <div className="h-full w-full min-h-0 min-w-0 flex flex-col overflow-hidden">
             <ChatPanel
               session={session}
               statePatch={session?.state_patch}
@@ -134,8 +138,12 @@ export function ExecutionContainer({ sessionId }: ExecutionContainerProps) {
         <ResizableHandle withHandle />
 
         {/* Right panel - Artifacts (55%) */}
-        <ResizablePanel defaultSize={55} minSize={20}>
-          <div className="h-full flex flex-col bg-muted/30 min-w-0">
+        <ResizablePanel
+          defaultSize={55}
+          minSize={30}
+          className="min-h-0 min-w-0 overflow-hidden"
+        >
+          <div className="h-full w-full min-h-0 min-w-0 flex flex-col overflow-hidden bg-muted/30">
             <Tabs
               value={rightTab}
               onValueChange={(value) => {

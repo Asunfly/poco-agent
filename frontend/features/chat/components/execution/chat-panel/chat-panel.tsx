@@ -226,7 +226,7 @@ export function ChatPanel({
       )}
 
       {/* Message list */}
-      <div className="flex-1 min-h-0 px-4">
+      <div className="flex-1 min-h-0 min-w-0 overflow-hidden px-4">
         {isLoadingHistory ? (
           <div className="flex h-full w-full items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground/20" />

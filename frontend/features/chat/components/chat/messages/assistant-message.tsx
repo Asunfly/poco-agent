@@ -104,7 +104,7 @@ export function AssistantMessage({ message, runUsage }: AssistantMessageProps) {
     (costLabel !== null || tokensLabel !== null || durationLabel !== null);
 
   return (
-    <div className="flex w-full gap-4 group animate-in fade-in slide-in-from-left-4 duration-300 min-w-0">
+    <div className="group flex w-full min-w-0 gap-4 animate-in fade-in slide-in-from-left-4 duration-300">
       {/* Avatar Section */}
       <div className="flex-shrink-0 mt-1">
         <div className="size-8 rounded-full bg-muted border border-border flex items-center justify-center">
@@ -128,14 +128,14 @@ export function AssistantMessage({ message, runUsage }: AssistantMessageProps) {
           </span>
         </div>
 
-        <div className="text-foreground text-base break-words w-full min-w-0">
+        <div className="w-full min-w-0 overflow-hidden text-base text-foreground break-words [overflow-wrap:anywhere]">
           <MessageContent content={message.content} />
           {message.status === "streaming" && <TypingIndicator />}
         </div>
 
         {/* Action Buttons - Visible on hover */}
-        <div className="flex items-center justify-between gap-2 pt-2 min-w-0">
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex min-w-0 items-center gap-2 pt-2">
+          <div className="shrink-0 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <Button
               variant="ghost"
               size="icon"
@@ -167,7 +167,7 @@ export function AssistantMessage({ message, runUsage }: AssistantMessageProps) {
           </div>
 
           {showUsage ? (
-            <div className="text-xs text-muted-foreground font-mono tabular-nums truncate min-w-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="w-0 flex-1 overflow-hidden truncate text-right text-xs text-muted-foreground font-mono tabular-nums opacity-0 transition-opacity group-hover:opacity-100">
               {costLabel ? `${t("chat.cost")}: ${costLabel}` : null}
               {tokensLabel
                 ? `${costLabel ? " · " : ""}${t("chat.tokens")}: ${tokensLabel}`

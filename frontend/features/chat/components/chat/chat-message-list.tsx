@@ -178,9 +178,9 @@ export function ChatMessageList({
   }
 
   return (
-    <div className="h-full overflow-hidden relative">
-      <ScrollArea ref={scrollAreaRef} className="h-full">
-        <div className="px-6 py-6 space-y-4 w-full min-w-0 max-w-full">
+    <div className="relative h-full w-full min-w-0 overflow-hidden">
+      <ScrollArea ref={scrollAreaRef} className="h-full w-full min-w-0">
+        <div className="w-full min-w-0 max-w-full space-y-4 px-6 py-6">
           {messages.map((message, index) => {
             if (message.role === "user") {
               const internalTexts =
@@ -207,7 +207,7 @@ export function ChatMessageList({
                     onEdit={onEditMessage}
                   />
                   <div className="flex justify-end w-full">
-                    <div className="max-w-[85%] w-full rounded-md border border-border/60 bg-muted/20 px-3 py-2">
+                    <div className="w-full min-w-0 max-w-[85%] rounded-md border border-border/60 bg-muted/20 px-3 py-2">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="text-xs font-medium text-foreground">
