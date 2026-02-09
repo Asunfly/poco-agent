@@ -12,12 +12,18 @@ import {
   ChevronsRight,
   Play,
   Pause,
+  Layers,
   Globe,
   SquareTerminal,
 } from "lucide-react";
 import { PanelHeader } from "@/components/shared/panel-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n/client";
 import { getBrowserScreenshotAction } from "@/features/chat/actions/query-actions";
@@ -651,43 +657,51 @@ export function ComputerPanel({
   const hasMultipleTypes = browserCount > 0 && terminalCount > 0;
 
   const filterToggleGroup = hasMultipleTypes ? (
-    <div className="flex flex-col h-full gap-1 p-1">
-      <button
-        type="button"
-        onClick={() => setReplayFilter("all")}
-        className={cn(
-          "flex-1 min-h-[100px] min-w-0 justify-center px-2 py-1 rounded-md transition-colors text-xs leading-tight",
-          replayFilter === "all"
-            ? "bg-accent text-accent-foreground"
-            : "hover:bg-muted/50 text-muted-foreground",
-        )}
-      >
-        {t("computerPanel.all")}
-      </button>
-      <button
-        type="button"
-        onClick={() => setReplayFilter("browser")}
-        className={cn(
-          "h-[60px] min-w-0 justify-center px-2 rounded-md transition-colors flex items-center justify-center",
-          replayFilter === "browser"
-            ? "bg-accent text-accent-foreground"
-            : "hover:bg-muted/50 text-muted-foreground",
-        )}
-      >
-        <Globe className="size-4" />
-      </button>
-      <button
-        type="button"
-        onClick={() => setReplayFilter("terminal")}
-        className={cn(
-          "h-[60px] min-w-0 justify-center px-2 rounded-md transition-colors flex items-center justify-center",
-          replayFilter === "terminal"
-            ? "bg-accent text-accent-foreground"
-            : "hover:bg-muted/50 text-muted-foreground",
-        )}
-      >
-        <SquareTerminal className="size-4" />
-      </button>
+    <div className="flex h-full flex-col items-center gap-1 p-1">
+      {(
+        [
+          {
+            value: "all" as const,
+            label: t("computer.replay.filter.all"),
+            Icon: Layers,
+          },
+          {
+            value: "browser" as const,
+            label: t("computer.replay.filter.browser"),
+            Icon: Globe,
+          },
+          {
+            value: "terminal" as const,
+            label: t("computer.replay.filter.terminal"),
+            Icon: SquareTerminal,
+          },
+        ] satisfies Array<{
+          value: ReplayFilter;
+          label: string;
+          Icon: React.ComponentType<{ className?: string }>;
+        }>
+      ).map(({ value, label, Icon }) => (
+        <Tooltip key={value}>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={() => setReplayFilter(value)}
+              aria-label={label}
+              className={cn(
+                "flex size-11 items-center justify-center rounded-md transition-colors",
+                replayFilter === value
+                  ? "bg-accent text-accent-foreground"
+                  : "hover:bg-muted/50 text-muted-foreground",
+              )}
+            >
+              <Icon className="size-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={8}>
+            {label}
+          </TooltipContent>
+        </Tooltip>
+      ))}
     </div>
   ) : null;
 
