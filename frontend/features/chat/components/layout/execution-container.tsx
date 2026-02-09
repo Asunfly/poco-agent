@@ -16,7 +16,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n/client";
 
 interface ExecutionContainerProps {
@@ -99,18 +98,25 @@ export function ExecutionContainer({ sessionId }: ExecutionContainerProps) {
   // Desktop resizable layout
   const tabsSwitch = (
     <TabsList className="min-w-0 max-w-full overflow-hidden">
-      <TabsTrigger value="computer" className="min-w-0 px-2">
+      <TabsTrigger value="computer" className="!flex-none min-w-0 px-2">
         <Monitor className="size-4" />
-        {t("mobile.computer")}
+        <span className="whitespace-nowrap">{t("mobile.computer")}</span>
         {session?.status && isSessionActive ? (
-          <Badge variant="secondary" className="ml-1 hidden lg:inline-flex">
-            {t("computer.status.live")}
-          </Badge>
+          <span
+            className="ml-1 inline-flex items-center"
+            aria-label={t("computer.status.live")}
+            title={t("computer.status.live")}
+          >
+            <span
+              aria-hidden
+              className="size-2 shrink-0 rounded-full bg-primary motion-safe:animate-pulse"
+            />
+          </span>
         ) : null}
       </TabsTrigger>
-      <TabsTrigger value="artifacts" className="min-w-0 px-2">
+      <TabsTrigger value="artifacts" className="!flex-none min-w-0 px-2">
         <Layers className="size-4" />
-        {t("mobile.artifacts")}
+        <span className="whitespace-nowrap">{t("mobile.artifacts")}</span>
       </TabsTrigger>
     </TabsList>
   );

@@ -38,7 +38,9 @@ export function ArtifactsHeader({
       className="border-b"
       content={
         headerAction ? (
-          <div className="flex items-center">{headerAction}</div>
+          <div className="flex min-w-0 items-center overflow-hidden">
+            {headerAction}
+          </div>
         ) : undefined
       }
       action={
