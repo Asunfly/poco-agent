@@ -14,7 +14,7 @@ Think of it as a **safer** (sandboxed isolation), **more beautiful** (modern UI)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)](https://fastapi.tiangolo.com/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/poco-ai/poco-agent)
 
-[English](./README_EN.md) | [中文](./README_zh.md)
+[English](./README_EN.md) | [中文](./README.md)
 
 </div>
 
@@ -32,40 +32,35 @@ Think of it as a **safer** (sandboxed isolation), **more beautiful** (modern UI)
 ![home](assets/home.png)
 
 <details>
-<summary><strong>Click to view more feature screenshots</strong></summary>
+<summary><strong>Click to view more feature demos</strong></summary>
 <br>
 
-**1. Beautiful frontend output rendering**
+**1. Artifact rendering, supports browser and terminal review**
 
 ![output](assets/output.png)
+![output-computer](assets/output-computer.png)
 
-**2. Full MCP/skills support with easy configuration**
+https://github.com/user-attachments/assets/3d732f0b-3f32-4aca-ab61-ec28c5fd274e
 
-![home](assets/capability.png)
+![HTML](https://github.com/user-attachments/assets/0ef59c4c-8363-44a6-b9ed-7005ccfd71cb)
+
+![Multiple-file](https://github.com/user-attachments/assets/8135dab4-6396-4af8-97af-6f665853fb56)
+
+**2. Full Plugin/MCP/Skills/Subagent/Slash Commands support with easy configuration**
+
+![mcp](assets/mcp.png)
 
 ![skills](assets/skills.png)
+
+https://github.com/user-attachments/assets/60df5a0f-c338-44ad-af03-e1ebb98d5743
 
 **3. Scheduled tasks**
 
 ![schedule](assets/schedule.png)
 
-</details>
+**4. Mobile optimization - your AI Coworker in your pocket**
 
-<details>
-<summary><strong>Click to view feature demos</strong></summary>
-<br>
-
-**1. Mobile operation demo**
-Perfectly adapted for mobile - your AI Coworker in your pocket.
-![Demo4](https://github.com/user-attachments/assets/ccf680bb-358c-4fc9-ad97-50f75b5ea3ac)
-
-**2. Coding and output preview**
-Create a game through a few conversations with live preview on the right.
-![Demo1](https://github.com/user-attachments/assets/0ef59c4c-8363-44a6-b9ed-7005ccfd71cb)
-
-**3. Complex file processing**
-Supports reading and analyzing various project files.
-![Demo3](https://github.com/user-attachments/assets/8135dab4-6396-4af8-97af-6f665853fb56)
+https://github.com/user-attachments/assets/a8364763-8edf-4bb1-b873-5c27755a5712
 
 </details>
 

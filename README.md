@@ -32,40 +32,35 @@
 ![home](assets/home.png)
 
 <details>
-<summary><strong>点击查看更多功能截图</strong></summary>
+<summary><strong>点击查看更多功能演示</strong></summary>
 <br>
 
-**1. 产物前端渲染，页面高颜值**
+**1. 产物渲染，支持浏览器与终端回看**
 
 ![output](assets/output.png)
+![output-computer](assets/output-computer.png)
 
-**2. mcp/skills全面支持，配置容易**
+https://github.com/user-attachments/assets/3d732f0b-3f32-4aca-ab61-ec28c5fd274e
 
-![home](assets/capability.png)
+![HTML](https://github.com/user-attachments/assets/0ef59c4c-8363-44a6-b9ed-7005ccfd71cb)
+
+![Multiple-file](https://github.com/user-attachments/assets/8135dab4-6396-4af8-97af-6f665853fb56)
+
+**2. Plugin/MCP/Skills/Subagent/Slash Commands全面支持，配置容易**
+
+![mcp](assets/mcp.png)
 
 ![skills](assets/skills.png)
+
+https://github.com/user-attachments/assets/60df5a0f-c338-44ad-af03-e1ebb98d5743
 
 **3. 定时任务**
 
 ![schedule](assets/schedule.png)
 
-</details>
+**4. 移动端优化，口袋里的 AI Coworker**
 
-<details>
-<summary><strong>点击查看功能演示</strong></summary>
-<br>
-
-**1. 手机端操作演示**
-完美适配移动端，口袋里的 AI Coworker。
-![Demo4](https://github.com/user-attachments/assets/ccf680bb-358c-4fc9-ad97-50f75b5ea3ac)
-
-**2. 写代码与产物预览**
-通过几次对话做一个游戏，右侧直接预览运行结果。
-![Demo1](https://github.com/user-attachments/assets/0ef59c4c-8363-44a6-b9ed-7005ccfd71cb)
-
-**3. 复杂文件处理**
-支持读取和分析各类项目文件。
-![Demo3](https://github.com/user-attachments/assets/8135dab4-6396-4af8-97af-6f665853fb56)
+https://github.com/user-attachments/assets/a8364763-8edf-4bb1-b873-5c27755a5712
 
 </details>
 
