@@ -27,9 +27,6 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "15rem";
-const SIDEBAR_WIDTH_MOBILE = "15rem";
-const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 type SidebarContextProps = {
@@ -131,15 +128,12 @@ function SidebarProvider({
       <TooltipProvider delayDuration={0}>
         <div
           data-slot="sidebar-wrapper"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH,
-              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-              ...style,
-            } as React.CSSProperties
-          }
+          style={style}
           className={cn(
             "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex h-full w-full",
+            // Desktop sidebar width: 1/6 of viewport width.
+            "[--sidebar-width:16.6667vw]",
+            "[--sidebar-width-icon:3rem]",
             className,
           )}
           {...props}
@@ -187,12 +181,11 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
+          className={cn(
+            "bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden",
+            "[--sidebar-width:15rem]",
+            "[--sidebar-width-icon:3rem]",
+          )}
           side={side}
         >
           <SheetHeader className="sr-only">
