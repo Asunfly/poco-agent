@@ -18,11 +18,13 @@ import { useT } from "@/lib/i18n/client";
 
 interface CreditsPopoverProps {
   trigger: React.ReactNode;
+  onViewUsage?: () => void;
 }
 
-export function CreditsPopover({ trigger }: CreditsPopoverProps) {
+export function CreditsPopover({ trigger, onViewUsage }: CreditsPopoverProps) {
   const { t } = useT("translation");
   const [isDesktop, setIsDesktop] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -32,6 +34,15 @@ export function CreditsPopover({ trigger }: CreditsPopoverProps) {
     mediaQuery.addEventListener("change", updateMatches);
     return () => mediaQuery.removeEventListener("change", updateMatches);
   }, []);
+
+  React.useEffect(() => {
+    setIsOpen(false);
+  }, [isDesktop]);
+
+  const handleViewUsage = React.useCallback(() => {
+    onViewUsage?.();
+    setIsOpen(false);
+  }, [onViewUsage]);
 
   const content = (
     <div className="flex flex-col">
@@ -87,6 +98,7 @@ export function CreditsPopover({ trigger }: CreditsPopoverProps) {
         <Button
           variant="ghost"
           className="h-auto p-0 text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 hover:bg-transparent"
+          onClick={handleViewUsage}
         >
           {t("creditsPopover.viewUsage")}
           <ChevronRight className="size-3" />
@@ -97,7 +109,12 @@ export function CreditsPopover({ trigger }: CreditsPopoverProps) {
 
   if (isDesktop) {
     return (
-      <HoverCard openDelay={200} closeDelay={150}>
+      <HoverCard
+        openDelay={200}
+        closeDelay={150}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
         <HoverCardTrigger asChild>{trigger}</HoverCardTrigger>
         <HoverCardContent
           className="w-80 p-0 overflow-hidden border-border bg-card shadow-xl"
@@ -111,7 +128,7 @@ export function CreditsPopover({ trigger }: CreditsPopoverProps) {
   }
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent
         className="w-80 p-0 overflow-hidden border-border bg-card shadow-xl"

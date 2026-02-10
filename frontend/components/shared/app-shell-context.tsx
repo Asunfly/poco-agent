@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import type { ProjectItem, TaskHistoryItem } from "@/features/projects/types";
+import type { SettingsTabId } from "@/features/settings/types";
 
 export type AddTaskOptions = {
   timestamp?: string;
@@ -23,7 +24,7 @@ export type ProjectUpdatesInput = {
 
 export interface AppShellContextValue {
   lng: string;
-  openSettings: () => void;
+  openSettings: (tab?: SettingsTabId) => void;
 
   projects: ProjectItem[];
   addProject: (

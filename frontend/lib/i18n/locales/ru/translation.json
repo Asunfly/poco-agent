@@ -629,7 +629,7 @@
         "title": "Запланированные задачи",
         "create": "Создать задачу",
         "createTitle": "Создать запланированную задачу",
-        "trigger": "Выполнить сейчас",
+        "trigger": "Выполнить",
         "empty": "Пока нет запланированных задач"
       },
       "detail": {
@@ -947,6 +947,7 @@
   },
   "project": {
     "subtitle": "{{count}} задач",
+    "titleWithCount": "{{name}} · {{count}} задач",
     "share": "Поделиться проектом",
     "settings": "Настройки проекта",
     "rename": "Переименовать проект",
@@ -1086,8 +1087,10 @@
   },
   "cardNav": {
     "turnOffAll": "Выключить все",
+    "turnOnAll": "Включить все",
     "noMcpInstalled": "MCP не установлен",
     "noSkillsInstalled": "Навыки не установлены",
+    "noPluginsInstalled": "Пресеты не установлены",
     "oneClickClose": "Выключить все",
     "notInstalledMcp": "MCP не установлен",
     "notInstalledSkill": "Навыки не установлены",

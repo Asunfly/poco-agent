@@ -54,12 +54,14 @@ import type {
   ApiProviderConfig,
   SettingsSidebarItem,
   SettingsTabId,
+  SettingsTabRequest,
 } from "@/features/settings/types";
 import { useUserAccount } from "@/features/user/hooks/use-user-account";
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  tabRequest?: SettingsTabRequest | null;
 }
 
 type MobileView = "overview" | SettingsTabId;
@@ -86,7 +88,11 @@ const DEFAULT_ANTHROPIC_CONFIG: ApiProviderConfig = {
   baseUrl: "https://api.anthropic.com",
 };
 
-export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
+export function SettingsDialog({
+  open,
+  onOpenChange,
+  tabRequest,
+}: SettingsDialogProps) {
   const { t } = useT("translation");
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -95,7 +101,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { currentLanguage, changeLanguage } = useSettingsLanguage();
   const { profile, credits, isLoading } = useUserAccount();
 
-  const [activeTab, setActiveTab] = React.useState<SettingsTabId>("account");
+  const [activeTab, setActiveTab] = React.useState<SettingsTabId>(
+    tabRequest?.tab ?? "account",
+  );
   const [mobileView, setMobileView] = React.useState<MobileView>("overview");
   const [isGlmEnabled, setIsGlmEnabled] = React.useState(true);
   const [openAiConfig, setOpenAiConfig] = React.useState(DEFAULT_OPENAI_CONFIG);
@@ -261,6 +269,24 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       resetDragState();
     }
   }, [open, resetDragState]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    if (!tabRequest) return;
+    setActiveTab(tabRequest.tab);
+    if (isMobile) {
+      setMobileView(tabRequest.tab);
+    }
+  }, [open, tabRequest, isMobile]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    if (tabRequest) return;
+    setActiveTab("account");
+    if (isMobile) {
+      setMobileView("overview");
+    }
+  }, [open, tabRequest, isMobile]);
 
   const updateOpenAiConfig = React.useCallback(
     (patch: Partial<ApiProviderConfig>) => {

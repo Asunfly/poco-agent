@@ -629,7 +629,7 @@
         "title": "スケジュールタスク",
         "create": "タスクを作成",
         "createTitle": "スケジュールタスクを作成",
-        "trigger": "今すぐ実行",
+        "trigger": "実行",
         "empty": "まだスケジュールタスクはありません"
       },
       "detail": {
@@ -947,6 +947,7 @@
   },
   "project": {
     "subtitle": "{{count}}タスク",
+    "titleWithCount": "{{name}} ・ {{count}}件のタスク",
     "share": "プロジェクトを共有",
     "settings": "プロジェクト設定",
     "rename": "プロジェクト名を変更",
@@ -1086,8 +1087,10 @@
   },
   "cardNav": {
     "turnOffAll": "すべてをオフ",
+    "turnOnAll": "すべてをオン",
     "noMcpInstalled": "MCPはインストールされていません",
     "noSkillsInstalled": "スキルはインストールされていません",
+    "noPluginsInstalled": "プリセットはインストールされていません",
     "oneClickClose": "すべてをオフ",
     "notInstalledMcp": "MCPはインストールされていません",
     "notInstalledSkill": "スキルはインストールされていません",

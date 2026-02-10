@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { ComposerMode } from "./task-composer";
-
-const MODE_OPTIONS: ComposerMode[] = ["task", "plan", "scheduled"];
+import { COMPOSER_MODE_SEQUENCE } from "@/features/home/lib/mode-utils";
 
 const MODE_ICONS: Record<
   ComposerMode,
@@ -55,7 +54,7 @@ export function ModeToggle({
         className,
       )}
     >
-      {MODE_OPTIONS.map((value) => {
+      {COMPOSER_MODE_SEQUENCE.map((value) => {
         const Icon = MODE_ICONS[value];
         const isActive = value === mode;
         const label = t(`hero.modeLabels.${value}`);

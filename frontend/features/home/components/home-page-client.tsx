@@ -8,8 +8,6 @@ import { useT } from "@/lib/i18n/client";
 import { useAutosizeTextarea } from "../hooks/use-autosize-textarea";
 
 import { HomeHeader } from "./home-header";
-import { TaskComposer } from "./task-composer";
-import { ConnectorsBar } from "./connectors-bar";
 import { createSessionAction } from "@/features/chat/actions/session-actions";
 import type { ComposerMode, TaskSendOptions } from "./task-composer";
 
@@ -17,7 +15,8 @@ import { useAppShell } from "@/components/shared/app-shell-context";
 import { scheduledTasksService } from "@/features/scheduled-tasks/services/scheduled-tasks-service";
 import { toast } from "sonner";
 import type { TaskConfig } from "@/features/chat/types/api/session";
-import { ModeToggle } from "./mode-toggle";
+import { TaskEntrySection } from "@/features/home/components/task-entry-section";
+import { useComposerModeHotkeys } from "@/features/home/hooks/use-composer-mode-hotkeys";
 
 export function HomePageClient() {
   const { t } = useT("translation");
@@ -31,6 +30,7 @@ export function HomePageClient() {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   useAutosizeTextarea(textareaRef, inputValue);
+  useComposerModeHotkeys({ textareaRef, setMode });
 
   // Determine if connectors bar should be expanded
   const shouldExpandConnectors = isInputFocused || inputValue.trim().length > 0;
@@ -184,38 +184,22 @@ export function HomePageClient() {
     <div className="flex flex-1 flex-col min-h-0">
       <HomeHeader onOpenSettings={openSettings} />
 
-      <div className="flex flex-1 flex-col items-center justify-start px-6 pt-[20vh] min-h-0 overflow-auto">
-        <div className="w-full max-w-2xl">
-          {/* 欢迎语 */}
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-medium tracking-tight text-foreground">
-              {t("hero.title")}
-            </h1>
-          </div>
-
-          <div className="mb-5">
-            <ModeToggle
-              mode={mode}
-              onModeChange={setMode}
-              disabled={isSubmitting}
-              className="w-full"
-            />
-          </div>
-
-          <TaskComposer
-            textareaRef={textareaRef}
-            value={inputValue}
-            onChange={setInputValue}
-            mode={mode}
-            onSend={handleSendTask}
-            isSubmitting={isSubmitting}
-            onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setIsInputFocused(false)}
-          />
-
-          <ConnectorsBar forceExpanded={shouldExpandConnectors} />
-        </div>
-      </div>
+      <TaskEntrySection
+        title={t("hero.title")}
+        mode={mode}
+        onModeChange={setMode}
+        toggleDisabled={isSubmitting}
+        connectorsExpanded={shouldExpandConnectors}
+        composerProps={{
+          textareaRef,
+          value: inputValue,
+          onChange: setInputValue,
+          onSend: handleSendTask,
+          isSubmitting,
+          onFocus: () => setIsInputFocused(true),
+          onBlur: () => setIsInputFocused(false),
+        }}
+      />
     </div>
   );
 }

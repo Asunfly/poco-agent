@@ -7,6 +7,7 @@ import { useSearchDialog } from "@/features/search/hooks/use-search-dialog";
 import { CreateProjectDialog } from "@/features/projects/components/create-project-dialog";
 import { MainSidebar } from "./main-sidebar";
 import type { ProjectItem, TaskHistoryItem } from "@/features/projects/types";
+import type { SettingsTabId } from "@/features/settings/types";
 
 interface AppSidebarProps {
   projects: ProjectItem[];
@@ -18,7 +19,7 @@ interface AppSidebarProps {
   onCreateProject?: (name: string) => void;
   onRenameProject?: (projectId: string, newName: string) => void;
   onDeleteProject?: (projectId: string) => Promise<void> | void;
-  onOpenSettings?: () => void;
+  onOpenSettings?: (tab?: SettingsTabId) => void;
 }
 
 // 默认空函数

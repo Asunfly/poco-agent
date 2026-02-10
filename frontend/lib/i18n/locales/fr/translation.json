@@ -629,7 +629,7 @@
         "title": "Tâches planifiées",
         "create": "Créer une tâche",
         "createTitle": "Créer une tâche planifiée",
-        "trigger": "Exécuter maintenant",
+        "trigger": "Exécuter",
         "empty": "Aucune tâche planifiée pour le moment"
       },
       "detail": {
@@ -947,6 +947,7 @@
   },
   "project": {
     "subtitle": "{{count}} tâches",
+    "titleWithCount": "{{name}} · {{count}} tâches",
     "share": "Partager le projet",
     "settings": "Paramètres du projet",
     "rename": "Renommer le projet",
@@ -1086,8 +1087,10 @@
   },
   "cardNav": {
     "turnOffAll": "Tout éteindre",
+    "turnOnAll": "Tout activer",
     "noMcpInstalled": "Aucun MCP installé",
     "noSkillsInstalled": "Aucune compétence installée",
+    "noPluginsInstalled": "Aucun preset installé",
     "oneClickClose": "Tout éteindre",
     "notInstalledMcp": "Aucun MCP installé",
     "notInstalledSkill": "Aucune compétence installée",

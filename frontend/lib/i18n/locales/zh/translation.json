@@ -638,7 +638,7 @@
         "title": "定时任务",
         "create": "创建任务",
         "createTitle": "创建定时任务",
-        "trigger": "立即执行",
+        "trigger": "执行",
         "empty": "暂无定时任务"
       },
       "detail": {
@@ -1052,6 +1052,7 @@
   },
   "project": {
     "subtitle": "{{count}} 个任务",
+    "titleWithCount": "{{name}} · {{count}} 个任务",
     "share": "分享项目",
     "settings": "项目设置",
     "rename": "重命名项目",
@@ -1192,6 +1193,7 @@
   },
   "cardNav": {
     "oneClickClose": "一键关闭",
+    "turnOnAll": "一键开启",
     "notInstalledMcp": "未安装 MCP",
     "notInstalledSkill": "未安装技能",
     "noPluginsInstalled": "未安装预设",

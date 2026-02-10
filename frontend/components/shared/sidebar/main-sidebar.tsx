@@ -67,6 +67,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import type { ProjectItem, TaskHistoryItem } from "@/features/projects/types";
+import type { SettingsTabId } from "@/features/settings/types";
 import { TaskHistoryList } from "./task-history-list";
 import { CollapsibleProjectItem } from "./collapsible-project-item";
 import { useSearchDialog } from "@/features/search/hooks/use-search-dialog";
@@ -189,7 +190,7 @@ export function MainSidebar({
   onMoveTaskToProject?: (taskId: string, projectId: string | null) => void;
   onRenameProject?: (projectId: string, newName: string) => void;
   onDeleteProject?: (projectId: string) => Promise<void> | void;
-  onOpenSettings?: () => void;
+  onOpenSettings?: (tab?: SettingsTabId) => void;
   onOpenCreateProjectDialog?: () => void;
 }) {
   const { t } = useT("translation");
@@ -723,7 +724,7 @@ export function MainSidebar({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onOpenSettings}
+                onClick={() => onOpenSettings?.()}
                 className="size-8 text-muted-foreground hover:bg-sidebar-accent"
                 title={t("sidebar.settings")}
               >

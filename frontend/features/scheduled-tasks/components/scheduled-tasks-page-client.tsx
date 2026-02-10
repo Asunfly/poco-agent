@@ -33,7 +33,7 @@ export function ScheduledTasksPageClient() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <PullToRefresh onRefresh={store.refresh} isLoading={store.isLoading}>
           <div className="flex flex-1 flex-col px-6 py-6 overflow-auto">
-            <div className="w-full max-w-6xl mx-auto">
+            <div className="w-full">
               <ScheduledTasksTable
                 tasks={store.tasks}
                 savingId={store.savingId}

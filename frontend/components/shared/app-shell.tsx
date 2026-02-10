@@ -5,6 +5,10 @@ import * as React from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/shared/sidebar/app-sidebar";
 import { SettingsDialog } from "@/features/settings/components/settings-dialog";
+import type {
+  SettingsTabId,
+  SettingsTabRequest,
+} from "@/features/settings/types";
 
 import { useProjects } from "@/features/projects/hooks/use-projects";
 import { useTaskHistory } from "@/features/projects/hooks/use-task-history";
@@ -21,6 +25,8 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [settingsTabRequest, setSettingsTabRequest] =
+    React.useState<SettingsTabRequest | null>(null);
 
   const { projects, addProject, updateProject, removeProject } = useProjects(
     {},
@@ -40,8 +46,20 @@ export function AppShell({
     removeProject,
   });
 
-  const openSettings = React.useCallback(() => {
+  const openSettings = React.useCallback((tab?: SettingsTabId) => {
+    if (tab) {
+      setSettingsTabRequest({ tab, requestId: Date.now() });
+    } else {
+      setSettingsTabRequest(null);
+    }
     setIsSettingsOpen(true);
+  }, []);
+
+  const handleSettingsOpenChange = React.useCallback((nextOpen: boolean) => {
+    setIsSettingsOpen(nextOpen);
+    if (!nextOpen) {
+      setSettingsTabRequest(null);
+    }
   }, []);
 
   const handleRenameProject = React.useCallback(
@@ -112,7 +130,8 @@ export function AppShell({
 
             <SettingsDialog
               open={isSettingsOpen}
-              onOpenChange={setIsSettingsOpen}
+              onOpenChange={handleSettingsOpenChange}
+              tabRequest={settingsTabRequest ?? undefined}
             />
           </div>
         </SidebarProvider>

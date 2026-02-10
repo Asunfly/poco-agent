@@ -638,7 +638,7 @@
         "title": "Scheduled Tasks",
         "create": "Create Task",
         "createTitle": "Create Scheduled Task",
-        "trigger": "Run Now",
+        "trigger": "Execute",
         "empty": "No scheduled tasks yet"
       },
       "detail": {
@@ -1052,6 +1052,7 @@
   },
   "project": {
     "subtitle": "{{count}} tasks",
+    "titleWithCount": "{{name}} · {{count}} tasks",
     "share": "Share Project",
     "settings": "Project Settings",
     "rename": "Rename Project",
@@ -1192,6 +1193,7 @@
   },
   "cardNav": {
     "turnOffAll": "Turn off all",
+    "turnOnAll": "Turn on all",
     "noMcpInstalled": "No MCP installed",
     "noSkillsInstalled": "No skills installed",
     "noPluginsInstalled": "No presets installed",

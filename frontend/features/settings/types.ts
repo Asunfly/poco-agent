@@ -2,6 +2,11 @@ import type { LucideIcon } from "lucide-react";
 
 export type SettingsTabId = "account" | "models" | "usage";
 
+export type SettingsTabRequest = {
+  tab: SettingsTabId;
+  requestId: number;
+};
+
 export interface SettingsSidebarItem {
   id: SettingsTabId;
   label: string;

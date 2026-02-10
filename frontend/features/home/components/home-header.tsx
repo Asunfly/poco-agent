@@ -9,9 +9,10 @@ import { CreditsPopover } from "./credits-popover";
 import { UserMenu } from "@/features/user/components/user-menu";
 import { RepoLinkButton } from "@/components/shared/repo-link-button";
 import { PageHeaderShell } from "@/components/shared/page-header-shell";
+import type { SettingsTabId } from "@/features/settings/types";
 
 interface HomeHeaderProps {
-  onOpenSettings?: () => void;
+  onOpenSettings?: (tab?: SettingsTabId) => void;
 }
 
 export function HomeHeader({ onOpenSettings }: HomeHeaderProps) {
@@ -48,12 +49,9 @@ export function HomeHeader({ onOpenSettings }: HomeHeaderProps) {
                 <Coins className="size-3.5" />
               </Button>
             }
+            onViewUsage={() => onOpenSettings?.("usage")}
           />
-          <UserMenu
-            onOpenSettings={() => {
-              if (onOpenSettings) onOpenSettings();
-            }}
-          />
+          <UserMenu onOpenSettings={(tab) => onOpenSettings?.(tab)} />
         </div>
       }
     />

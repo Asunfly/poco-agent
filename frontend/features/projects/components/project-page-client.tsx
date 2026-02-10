@@ -8,20 +8,19 @@ import { useT } from "@/lib/i18n/client";
 import { useAutosizeTextarea } from "@/features/home/hooks/use-autosize-textarea";
 import { createSessionAction } from "@/features/chat/actions/session-actions";
 import type { ProjectItem, TaskHistoryItem } from "@/features/projects/types";
-import type { ComposerMode } from "@/features/home/components/task-composer";
+import type {
+  ComposerMode,
+  TaskSendOptions,
+} from "@/features/home/components/task-composer";
 
 import { ProjectHeader } from "@/features/projects/components/project-header";
-import { KeyboardHints } from "@/features/home/components/keyboard-hints";
-import { QuickActions } from "@/features/home/components/quick-actions";
-import {
-  TaskComposer,
-  type TaskSendOptions,
-} from "@/features/home/components/task-composer";
-import { ModeToggle } from "@/features/home/components/mode-toggle";
+import { QUICK_ACTIONS } from "@/features/home/model/constants";
 import { useAppShell } from "@/components/shared/app-shell-context";
 import { scheduledTasksService } from "@/features/scheduled-tasks/services/scheduled-tasks-service";
 import { toast } from "sonner";
 import type { TaskConfig } from "@/features/chat/types/api/session";
+import { TaskEntrySection } from "@/features/home/components/task-entry-section";
+import { useComposerModeHotkeys } from "@/features/home/hooks/use-composer-mode-hotkeys";
 
 interface ProjectPageClientProps {
   projectId: string;
@@ -40,14 +39,65 @@ export function ProjectPageClient({ projectId }: ProjectPageClientProps) {
 
   const [inputValue, setInputValue] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isInputFocused, setIsInputFocused] = React.useState(false);
   const [mode, setMode] = React.useState<ComposerMode>("task");
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   useAutosizeTextarea(textareaRef, inputValue);
+  useComposerModeHotkeys({ textareaRef, setMode });
 
-  const focusComposer = React.useCallback(() => {
-    requestAnimationFrame(() => textareaRef.current?.focus());
-  }, []);
+  const shouldExpandConnectors = isInputFocused || inputValue.trim().length > 0;
+
+  const projectTaskCount = React.useMemo(
+    () =>
+      taskHistory.filter(
+        (task: TaskHistoryItem) => task.projectId === projectId,
+      ).length,
+    [projectId, taskHistory],
+  );
+
+  const projectTitle = React.useMemo(() => {
+    const baseName =
+      currentProject?.name || t("project.untitled", "Untitled Project");
+    return t("project.titleWithCount", {
+      name: baseName,
+      count: projectTaskCount,
+    });
+  }, [currentProject?.name, projectTaskCount, t]);
+
+  const promptHints = React.useMemo(
+    () =>
+      QUICK_ACTIONS.map((action) => t(action.labelKey)).filter(
+        (hint) => hint && hint.trim().length > 0,
+      ),
+    [t],
+  );
+  const [placeholderIndex, setPlaceholderIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (promptHints.length <= 1) return;
+    const id = window.setInterval(() => {
+      setPlaceholderIndex((prev) =>
+        promptHints.length === 0 ? 0 : (prev + 1) % promptHints.length,
+      );
+    }, 4000);
+    return () => window.clearInterval(id);
+  }, [promptHints.length]);
+
+  React.useEffect(() => {
+    if (promptHints.length === 0) {
+      setPlaceholderIndex(0);
+      return;
+    }
+    if (placeholderIndex >= promptHints.length) {
+      setPlaceholderIndex(0);
+    }
+  }, [placeholderIndex, promptHints.length]);
+
+  const rotatingPlaceholder =
+    promptHints.length > 0
+      ? promptHints[placeholderIndex % promptHints.length]
+      : undefined;
 
   const handleSendTask = React.useCallback(
     async (options?: TaskSendOptions) => {
@@ -158,14 +208,6 @@ export function ProjectPageClient({ projectId }: ProjectPageClientProps) {
     ],
   );
 
-  const handleQuickActionPick = React.useCallback(
-    (prompt: string) => {
-      setInputValue(prompt);
-      focusComposer();
-    },
-    [focusComposer],
-  );
-
   const handleRenameProject = React.useCallback(
     (targetProjectId: string, newName: string) => {
       updateProject(targetProjectId, { name: newName });
@@ -184,54 +226,36 @@ export function ProjectPageClient({ projectId }: ProjectPageClientProps) {
   );
 
   return (
-    <>
+    <div className="flex flex-1 flex-col min-h-0">
       <ProjectHeader
         project={currentProject}
         onRenameProject={handleRenameProject}
         onDeleteProject={handleDeleteProject}
       />
 
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-10">
-        <div className="w-full max-w-2xl">
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-medium tracking-tight text-foreground">
-              {currentProject?.name || t("hero.title")}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t("project.subtitle", {
-                count: taskHistory.filter(
-                  (task: TaskHistoryItem) => task.projectId === projectId,
-                ).length,
-              })}
-            </p>
-          </div>
-
-          <div className="mb-5">
-            <ModeToggle
-              mode={mode}
-              onModeChange={setMode}
-              disabled={isSubmitting}
-              className="w-full"
-            />
-          </div>
-
-          <TaskComposer
-            textareaRef={textareaRef}
-            value={inputValue}
-            onChange={setInputValue}
-            mode={mode}
-            onSend={handleSendTask}
-            isSubmitting={isSubmitting}
-            allowProjectize={false}
-            onRepoDefaultsSave={async (payload) => {
-              await updateProject(projectId, payload);
-            }}
-          />
-
-          <QuickActions onPick={handleQuickActionPick} />
-          <KeyboardHints />
-        </div>
-      </div>
-    </>
+      <TaskEntrySection
+        title={projectTitle}
+        mode={mode}
+        onModeChange={setMode}
+        toggleDisabled={isSubmitting}
+        connectorsExpanded={shouldExpandConnectors}
+        composerProps={{
+          textareaRef,
+          value: inputValue,
+          onChange: setInputValue,
+          onSend: handleSendTask,
+          isSubmitting,
+          onFocus: () => setIsInputFocused(true),
+          onBlur: () => setIsInputFocused(false),
+          allowProjectize: false,
+          onRepoDefaultsSave: async (payload) => {
+            await updateProject(projectId, payload);
+          },
+          placeholderOverride:
+            mode === "task" ? rotatingPlaceholder : undefined,
+          inlineKeyboardHint: true,
+        }}
+      />
+    </div>
   );
 }

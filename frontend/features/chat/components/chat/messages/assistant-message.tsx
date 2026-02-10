@@ -23,7 +23,7 @@ function pickNumber(value: unknown): number | null {
 
 function formatCostUsd(value: number | null | undefined): string | null {
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
-  return `$${value.toFixed(6)}`;
+  return "$" + value.toFixed(3);
 }
 
 function formatDurationMs(value: number | null | undefined): string | null {

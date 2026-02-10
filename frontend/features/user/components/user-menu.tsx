@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { CreditCard, Home, LogOut, Settings } from "lucide-react";
+import { Home, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useT } from "@/lib/i18n/client";
@@ -18,10 +18,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import type { SettingsTabId } from "@/features/settings/types";
 
 interface UserMenuProps {
   trigger?: React.ReactNode;
-  onOpenSettings: () => void;
+  onOpenSettings: (tab?: SettingsTabId) => void;
 }
 
 export function UserMenu({ trigger, onOpenSettings }: UserMenuProps) {
@@ -54,18 +55,6 @@ export function UserMenu({ trigger, onOpenSettings }: UserMenuProps) {
 
   const content = (
     <div className="flex flex-col gap-1">
-      {/* Credits Summary */}
-      <div className="flex items-center justify-between px-2 py-1.5 text-sm">
-        <span className="text-muted-foreground font-medium flex items-center gap-2">
-          <CreditCard className="size-3.5" />
-          {t("userMenu.credits")}
-        </span>
-        <span className="font-semibold">
-          {t("queryActions.creditUnlimited")}
-        </span>
-      </div>
-      <Separator className="my-1" />
-
       <Button
         variant="ghost"
         size="sm"
@@ -79,7 +68,7 @@ export function UserMenu({ trigger, onOpenSettings }: UserMenuProps) {
         variant="ghost"
         size="sm"
         className="justify-start h-8 font-normal px-2"
-        onClick={onOpenSettings}
+        onClick={() => onOpenSettings()}
       >
         <Settings className="mr-2 size-4" />
         {t("userMenu.settings")}

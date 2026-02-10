@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
-import { Plug, Server, Sparkles, ChevronRight, PowerOff } from "lucide-react";
+import { Plug, Server, Sparkles, ChevronRight, Power } from "lucide-react";
 import { mcpService } from "@/features/capabilities/mcp/services/mcp-service";
 import { skillsService } from "@/features/capabilities/skills/services/skills-service";
 import { pluginsService } from "@/features/capabilities/plugins/services/plugins-service";
@@ -39,6 +39,8 @@ import {
 
 const MCP_LIMIT = 3;
 const SKILL_LIMIT = 5;
+
+type CapabilityViewId = "mcp" | "skills" | "presets";
 
 export interface CardNavProps {
   triggerText?: string;
@@ -324,47 +326,16 @@ export function CardNav({
     [skillInstalls, t],
   );
 
-  // Batch toggle all Plugins
-  const batchTogglePlugins = useCallback(
-    async (enable: boolean) => {
-      try {
-        const installIds = pluginInstalls
-          .filter((install) => install.enabled !== enable)
-          .map((install) => install.id);
-        if (installIds.length > 0) {
-          await pluginsService.bulkUpdateInstalls({
-            enabled: enable,
-            install_ids: installIds,
-          });
-        }
-        setPluginInstalls((prev) =>
-          prev.map((install) => ({ ...install, enabled: enable })),
-        );
-        if (enable) {
-          playMcpInstallSound();
-        }
-      } catch (error) {
-        console.error("[CardNav] Failed to batch toggle Plugins:", error);
-        toast.error(t("hero.toasts.actionFailed"));
-      }
-    },
-    [pluginInstalls, t],
-  );
-
   // Handle warning icon click
   const handleWarningClick = useCallback(
-    (type: "mcp" | "skill") => {
-      const count =
-        type === "mcp"
-          ? installedMcps.filter((i) => i.enabled).length
-          : installedSkills.filter((i) => i.enabled).length;
+    (type: "mcp" | "skill", count: number) => {
       toast.warning(
         t(`hero.warnings.tooMany${type === "mcp" ? "Mcps" : "Skills"}`, {
           count,
         }),
       );
     },
-    [installedMcps, installedSkills, t],
+    [t],
   );
 
   const createTimeline = useCallback(() => {
@@ -455,14 +426,108 @@ export function CardNav({
     cardsRef.current[index] = el;
   };
 
-  const handleLabelClick = useCallback(
-    (e: React.MouseEvent, viewId: "mcp" | "skills" | "presets") => {
-      e.stopPropagation();
+  const navigateToCapabilityView = useCallback(
+    (viewId: CapabilityViewId) => {
       setPendingCapabilityView(viewId);
       router.push(`/${lng}/capabilities`);
     },
-    [router, lng],
+    [lng, router],
   );
+
+  const handleLabelClick = useCallback(
+    (e: React.MouseEvent, viewId: CapabilityViewId) => {
+      e.stopPropagation();
+      navigateToCapabilityView(viewId);
+    },
+    [navigateToCapabilityView],
+  );
+
+  const handleCardClick = useCallback(
+    (viewId: CapabilityViewId) => {
+      navigateToCapabilityView(viewId);
+    },
+    [navigateToCapabilityView],
+  );
+
+  const handleCardKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>, viewId: CapabilityViewId) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        navigateToCapabilityView(viewId);
+      }
+    },
+    [navigateToCapabilityView],
+  );
+
+  const countEnabled = useCallback((items: InstalledItem[]) => {
+    return items.reduce((count, item) => (item.enabled ? count + 1 : count), 0);
+  }, []);
+
+  const mcpEnabledCount = countEnabled(installedMcps);
+  const skillEnabledCount = countEnabled(installedSkills);
+
+  const getToggleTooltip = (
+    type: "mcp" | "skill" | "plugin",
+    hasItems: boolean,
+    isActive: boolean,
+  ) => {
+    if (!hasItems) {
+      return t(
+        `cardNav.${
+          type === "mcp"
+            ? "noMcpInstalled"
+            : type === "skill"
+              ? "noSkillsInstalled"
+              : "noPluginsInstalled"
+        }`,
+      );
+    }
+
+    return t(`cardNav.${isActive ? "turnOffAll" : "turnOnAll"}`);
+  };
+
+  const renderAggregateToggle = (
+    type: "mcp" | "skill" | "plugin",
+    hasItems: boolean,
+    enabledCount: number,
+    toggleFn: (enable: boolean) => Promise<void> | void,
+  ) => {
+    const isActive = enabledCount > 0;
+    const tooltipLabel = getToggleTooltip(type, hasItems, isActive);
+    const isHighlighted = isActive;
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            aria-pressed={isHighlighted}
+            aria-label={tooltipLabel}
+            disabled={!hasItems}
+            onClick={async (event) => {
+              event.stopPropagation();
+              if (!hasItems) return;
+              const nextEnable = isActive ? false : true;
+              await toggleFn(nextEnable);
+            }}
+            className={cn(
+              "relative flex size-7 items-center justify-center rounded-full border transition-all duration-200",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+              !hasItems
+                ? "cursor-not-allowed border-border/40 bg-transparent text-muted-foreground/40"
+                : isHighlighted
+                  ? "border-primary/40 bg-primary/10 text-primary shadow-[0_6px_20px_-10px_hsl(var(--primary)/0.7)]"
+                  : "border-border/60 text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+            )}
+          >
+            <Power className="size-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={4}>
+          <span>{tooltipLabel}</span>
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
 
   const renderItemBadges = (
     items: InstalledItem[],
@@ -563,7 +628,12 @@ export function CardNav({
             {/* MCP Card */}
             <div
               ref={setCardRef(0)}
-              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink"
+              role="button"
+              tabIndex={0}
+              aria-label={t("cardNav.mcp")}
+              onClick={() => handleCardClick("mcp")}
+              onKeyDown={(event) => handleCardKeyDown(event, "mcp")}
+              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <div className="mb-3 flex min-w-0 items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <div className="flex shrink-0 items-center gap-2.5">
@@ -581,32 +651,18 @@ export function CardNav({
                     <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                   </button>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  {installedMcps.filter((i) => i.enabled).length > 0 && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            batchToggleMcps(false);
-                          }}
-                          className="flex items-center justify-center size-6 rounded-md hover:bg-muted/60 transition-colors text-muted-foreground hover:text-foreground"
-                          type="button"
-                        >
-                          <PowerOff className="size-3.5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" sideOffset={4}>
-                        <span>{t("cardNav.turnOffAll")}</span>
-                      </TooltipContent>
-                    </Tooltip>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {renderAggregateToggle(
+                    "mcp",
+                    installedMcps.length > 0,
+                    mcpEnabledCount,
+                    batchToggleMcps,
                   )}
-                  {installedMcps.filter((i) => i.enabled).length >
-                    MCP_LIMIT && (
+                  {mcpEnabledCount > MCP_LIMIT && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleWarningClick("mcp");
+                        handleWarningClick("mcp", mcpEnabledCount);
                       }}
                       className="flex items-center justify-center size-6 rounded-full hover:bg-amber-500/20 transition-colors"
                       type="button"
@@ -627,7 +683,12 @@ export function CardNav({
             {/* Skill Card */}
             <div
               ref={setCardRef(1)}
-              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink"
+              role="button"
+              tabIndex={0}
+              aria-label={t("cardNav.skills")}
+              onClick={() => handleCardClick("skills")}
+              onKeyDown={(event) => handleCardKeyDown(event, "skills")}
+              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <div className="mb-3 flex min-w-0 items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <div className="flex shrink-0 items-center gap-2.5">
@@ -645,32 +706,18 @@ export function CardNav({
                     <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                   </button>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  {installedSkills.filter((i) => i.enabled).length > 0 && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            batchToggleSkills(false);
-                          }}
-                          className="flex items-center justify-center size-6 rounded-md hover:bg-muted/60 transition-colors text-muted-foreground hover:text-foreground"
-                          type="button"
-                        >
-                          <PowerOff className="size-3.5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" sideOffset={4}>
-                        <span>{t("cardNav.turnOffAll")}</span>
-                      </TooltipContent>
-                    </Tooltip>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {renderAggregateToggle(
+                    "skill",
+                    installedSkills.length > 0,
+                    skillEnabledCount,
+                    batchToggleSkills,
                   )}
-                  {installedSkills.filter((i) => i.enabled).length >
-                    SKILL_LIMIT && (
+                  {skillEnabledCount > SKILL_LIMIT && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleWarningClick("skill");
+                        handleWarningClick("skill", skillEnabledCount);
                       }}
                       className="flex items-center justify-center size-6 rounded-full hover:bg-amber-500/20 transition-colors"
                       type="button"
@@ -691,9 +738,14 @@ export function CardNav({
             {/* Presets Card */}
             <div
               ref={setCardRef(2)}
-              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink"
+              role="button"
+              tabIndex={0}
+              aria-label={t("cardNav.plugins")}
+              onClick={() => handleCardClick("presets")}
+              onKeyDown={(event) => handleCardKeyDown(event, "presets")}
+              className="group relative flex min-w-[260px] shrink-0 flex-col rounded-lg border border-border/50 bg-muted/30 p-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_4px_12px_-2px_rgba(var(--foreground),0.05)] min-h-[140px] md:min-w-0 md:shrink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <div className="mb-3 flex min-w-0 items-center justify-between gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="mb-3 flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <div className="flex shrink-0 items-center gap-2.5">
                   <div className="flex items-center justify-center size-9 rounded-md bg-muted text-muted-foreground transition-all duration-300">
                     <Plug className="size-[1.125rem]" />
@@ -708,27 +760,6 @@ export function CardNav({
                     </span>
                     <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 hover:translate-x-0.5" />
                   </button>
-                </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  {installedPlugins.filter((i) => i.enabled).length > 0 && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            batchTogglePlugins(false);
-                          }}
-                          className="flex items-center justify-center size-6 rounded-md hover:bg-muted/60 transition-colors text-muted-foreground hover:text-foreground"
-                          type="button"
-                        >
-                          <PowerOff className="size-3.5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" sideOffset={4}>
-                        <span>{t("cardNav.turnOffAll")}</span>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
                 </div>
               </div>
               {renderItemBadges(

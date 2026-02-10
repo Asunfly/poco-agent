@@ -633,7 +633,7 @@
         "title": "Geplante Aufgaben",
         "create": "Aufgabe erstellen",
         "createTitle": "Geplante Aufgabe erstellen",
-        "trigger": "Jetzt ausführen",
+        "trigger": "Ausführen",
         "empty": "Noch keine geplanten Aufgaben"
       },
       "detail": {
@@ -951,6 +951,7 @@
   },
   "project": {
     "subtitle": "{{count}} Aufgaben",
+    "titleWithCount": "{{name}} · {{count}} Aufgaben",
     "share": "Projekt teilen",
     "settings": "Projekteinstellungen",
     "rename": "Projekt umbenennen",
@@ -1090,8 +1091,10 @@
   },
   "cardNav": {
     "turnOffAll": "Alle ausschalten",
+    "turnOnAll": "Alle einschalten",
     "noMcpInstalled": "Kein MCP installiert",
     "noSkillsInstalled": "Keine Skills installiert",
+    "noPluginsInstalled": "Keine Presets installiert",
     "oneClickClose": "Alle ausschalten",
     "notInstalledMcp": "Kein MCP installiert",
     "notInstalledSkill": "Keine Skills installiert",

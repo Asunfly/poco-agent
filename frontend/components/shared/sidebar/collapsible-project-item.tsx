@@ -178,10 +178,10 @@ export function CollapsibleProjectItem({
                   }}
                   className="size-5 shrink-0 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-sidebar-accent rounded-sm transition-all cursor-pointer group/toggle"
                 >
-                  <Folder className="size-4 group-hover/project-card:hidden" />
+                  <Folder className="size-4 hidden md:block md:group-hover/project-card:hidden" />
                   <ChevronRight
                     className={cn(
-                      "size-4 hidden group-hover/project-card:block transition-transform duration-200",
+                      "size-4 block transition-transform duration-200 md:hidden md:group-hover/project-card:block",
                       isExpanded && "rotate-90",
                     )}
                   />
