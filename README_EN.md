@@ -76,12 +76,6 @@ Visit: http://localhost:3000 after startup completes.
 
 For detailed deployment documentation and troubleshooting, please refer to the [Deployment Guide](./docs/README.md).
 
-## Community
-
-Scan to join our WeChat group:
-
-<img src="assets/wx_group.jpg" alt="WeChat Group QR Code" width="180">
-
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=poco-ai/poco-agent&type=date&legend=top-left)](https://www.star-history.com/#poco-ai/poco-agent&type=date&legend=top-left)

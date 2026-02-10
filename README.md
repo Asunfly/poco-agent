@@ -78,12 +78,6 @@ https://github.com/user-attachments/assets/a8364763-8edf-4bb1-b873-5c27755a5712
 
 详细的部署文档与可能遇到的问题，请参考[部署文档](./docs/README.md)。
 
-## 社区
-
-扫码加入微信群交流：
-
-<img src="assets/wx_group.jpg" alt="微信群二维码" width="180">
-
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=poco-ai/poco-agent&type=date&legend=top-left)](https://www.star-history.com/#poco-ai/poco-agent&type=date&legend=top-left)
