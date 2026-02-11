@@ -150,6 +150,8 @@ export function SubAgentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <CapabilityDialogContent
         title={title}
+        maxHeight="85dvh"
+        desktopMaxHeight="90dvh"
         footer={
           <DialogFooter className="grid grid-cols-2 gap-2">
             <Button

@@ -56,6 +56,9 @@ export function McpSettingsDialog({
       <CapabilityDialogContent
         title={t("mcpSettings.configureServer")}
         size="md"
+        className="h-[56dvh] sm:h-[64dvh]"
+        maxHeight="56dvh"
+        desktopMaxHeight="64dvh"
         bodyClassName="flex h-full min-h-0 flex-col overflow-hidden bg-background px-6 py-6"
         footer={
           <DialogFooter className="grid grid-cols-2 gap-2">
