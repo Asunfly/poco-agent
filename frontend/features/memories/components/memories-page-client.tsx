@@ -256,9 +256,9 @@ export function MemoriesPageClient() {
         <CapabilityDialogContent
           title={t("memories.create.title", "Add Memory")}
           size="sm"
-          maxHeight="34dvh"
-          desktopMaxHeight="34dvh"
-          bodyClassName="space-y-4 px-6 pt-4 pb-6"
+          maxHeight="none"
+          desktopMaxHeight="none"
+          bodyClassName="space-y-4 overflow-y-visible px-6 pt-4 pb-6"
           footer={
             <DialogFooter className="grid grid-cols-2 gap-2">
               <Button
@@ -289,7 +289,7 @@ export function MemoriesPageClient() {
               "memories.create.contentPlaceholder",
               "Type memory content",
             )}
-            className="min-h-32"
+            className="min-h-44"
           />
         </CapabilityDialogContent>
       </Dialog>
