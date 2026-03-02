@@ -59,25 +59,20 @@ class MemoryClient:
         self,
         *,
         messages: list[dict[str, Any]],
-        metadata: dict[str, Any] | None = None,
     ) -> Any:
         body: dict[str, Any] = {
             "session_id": self.session_id,
             "messages": messages,
         }
-        if metadata is not None:
-            body["metadata"] = metadata
         return await self._request("POST", "/api/v1/memories", json_body=body)
 
     async def create_memory_text(
         self,
         *,
         text: str,
-        metadata: dict[str, Any] | None = None,
     ) -> Any:
         return await self.create_memories(
             messages=[{"role": "user", "content": text}],
-            metadata=metadata,
         )
 
     async def list_memories(self) -> Any:
@@ -91,14 +86,11 @@ class MemoryClient:
         self,
         *,
         query: str,
-        filters: dict[str, Any] | None = None,
     ) -> Any:
         body: dict[str, Any] = {
             "session_id": self.session_id,
             "query": query,
         }
-        if filters is not None:
-            body["filters"] = filters
         return await self._request("POST", "/api/v1/memories/search", json_body=body)
 
     async def get_memory(self, memory_id: str) -> Any:
@@ -176,21 +168,15 @@ def create_memory_mcp_server(memory_client: MemoryClient) -> McpSdkServerConfig:
     @tool(
         "memory_create",
         "Create one user-level memory from plain text",
-        {"text": str, "metadata": dict | None},
+        {"text": str},
     )
     async def memory_create(args: dict[str, Any]) -> dict[str, Any]:
         raw_text = args.get("text")
         text = raw_text.strip() if isinstance(raw_text, str) else None
-        metadata = args.get("metadata")
-        if metadata is not None and not isinstance(metadata, dict):
-            return _format_tool_result(
-                "memory_create_error",
-                {"error": "metadata must be an object when provided"},
-            )
         if text:
             return await _run_tool(
                 "memory_create",
-                memory_client.create_memory_text(text=text, metadata=metadata),
+                memory_client.create_memory_text(text=text),
             )
 
         # Backward-compatible fallback for old callers that still send `messages`.
@@ -198,7 +184,7 @@ def create_memory_mcp_server(memory_client: MemoryClient) -> McpSdkServerConfig:
         if messages:
             return await _run_tool(
                 "memory_create",
-                memory_client.create_memories(messages=messages, metadata=metadata),
+                memory_client.create_memories(messages=messages),
             )
 
         return _format_tool_result(
@@ -211,7 +197,7 @@ def create_memory_mcp_server(memory_client: MemoryClient) -> McpSdkServerConfig:
     @tool(
         "memory_create_conversation",
         "Create user-level memories from a conversation",
-        {"messages": list, "metadata": dict | None},
+        {"messages": list},
     )
     async def memory_create_conversation(args: dict[str, Any]) -> dict[str, Any]:
         messages = _extract_messages(args.get("messages"))
@@ -220,21 +206,15 @@ def create_memory_mcp_server(memory_client: MemoryClient) -> McpSdkServerConfig:
                 "memory_create_conversation_error",
                 {"error": "messages must be a non-empty list of {role, content}"},
             )
-        metadata = args.get("metadata")
-        if metadata is not None and not isinstance(metadata, dict):
-            return _format_tool_result(
-                "memory_create_conversation_error",
-                {"error": "metadata must be an object when provided"},
-            )
         return await _run_tool(
             "memory_create_conversation",
-            memory_client.create_memories(messages=messages, metadata=metadata),
+            memory_client.create_memories(messages=messages),
         )
 
     @tool(
         "memory_search",
         "Search user-level memories",
-        {"query": str, "filters": dict | None},
+        {"query": str},
     )
     async def memory_search(args: dict[str, Any]) -> dict[str, Any]:
         query = args.get("query")
@@ -243,15 +223,9 @@ def create_memory_mcp_server(memory_client: MemoryClient) -> McpSdkServerConfig:
                 "memory_search_error",
                 {"error": "query must be a non-empty string"},
             )
-        filters = args.get("filters")
-        if filters is not None and not isinstance(filters, dict):
-            return _format_tool_result(
-                "memory_search_error",
-                {"error": "filters must be an object when provided"},
-            )
         return await _run_tool(
             "memory_search",
-            memory_client.search_memories(query=query.strip(), filters=filters),
+            memory_client.search_memories(query=query.strip()),
         )
 
     @tool(
