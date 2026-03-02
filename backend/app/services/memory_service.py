@@ -1,3 +1,4 @@
+from inspect import signature
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -239,8 +240,23 @@ class MemoryService:
             params["filters"] = request.filters
         return self._get_instance().search(query=request.query, **params)
 
-    def update_memory(self, *, memory_id: str, data: dict[str, Any]) -> Any:
-        return self._get_instance().update(memory_id=memory_id, data=data)
+    def update_memory(self, *, memory_id: str, text: str) -> Any:
+        clean_text = text.strip()
+        if not clean_text:
+            raise AppException(
+                error_code=ErrorCode.BAD_REQUEST,
+                message="text must be a non-empty string",
+            )
+
+        instance = self._get_instance()
+        try:
+            update_params = signature(instance.update).parameters
+        except (TypeError, ValueError):
+            return instance.update(memory_id=memory_id, data=clean_text)
+
+        if "text" in update_params:
+            return instance.update(memory_id=memory_id, text=clean_text)
+        return instance.update(memory_id=memory_id, data=clean_text)
 
     def get_memory_history(self, *, memory_id: str) -> Any:
         return self._get_instance().history(memory_id=memory_id)

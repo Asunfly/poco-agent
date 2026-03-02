@@ -34,4 +34,8 @@ class MemoryUpdateRequest(BaseModel):
     """Request to update memory in session scope."""
 
     session_id: str = Field(..., description="Session identifier.")
-    data: dict[str, Any] = Field(..., description="Updated memory content.")
+    text: str = Field(..., min_length=1, description="Updated memory text.")
+    metadata: dict[str, Any] | None = Field(
+        default=None,
+        description="Optional metadata for update operations.",
+    )

@@ -75,7 +75,7 @@ async def update_memory_internal(
     _token: None = Depends(require_internal_token),
     _user_id: str = Depends(get_user_id_by_session_id),
 ) -> JSONResponse:
-    result = memory_service.update_memory(memory_id=memory_id, data=request.data)
+    result = memory_service.update_memory(memory_id=memory_id, text=request.text)
     return Response.success(data=result, message="Memory updated successfully")
 
 

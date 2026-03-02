@@ -71,7 +71,7 @@ async def update_memory(
     memory_id: str,
     request: MemoryUpdateRequest,
 ) -> JSONResponse:
-    result = memory_service.update_memory(memory_id=memory_id, data=request.data)
+    result = memory_service.update_memory(memory_id=memory_id, text=request.text)
     return Response.success(data=result, message="Memory updated successfully")
 
 

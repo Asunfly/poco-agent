@@ -46,7 +46,11 @@ class MemorySearchRequest(BaseModel):
 class MemoryUpdateRequest(BaseModel):
     """Request to update a memory."""
 
-    data: dict[str, Any] = Field(..., description="Updated memory content.")
+    text: str = Field(..., min_length=1, description="Updated memory text.")
+    metadata: dict[str, Any] | None = Field(
+        default=None,
+        description="Optional metadata for update operations.",
+    )
 
 
 class InternalMemoryCreateRequest(BaseModel):
@@ -70,4 +74,8 @@ class InternalMemorySearchRequest(BaseModel):
 class InternalMemoryUpdateRequest(BaseModel):
     """Internal request to update memory by session scope."""
 
-    data: dict[str, Any] = Field(..., description="Updated memory content.")
+    text: str = Field(..., min_length=1, description="Updated memory text.")
+    metadata: dict[str, Any] | None = Field(
+        default=None,
+        description="Optional metadata for update operations.",
+    )

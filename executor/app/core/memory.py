@@ -100,11 +100,11 @@ class MemoryClient:
             params={"session_id": self.session_id},
         )
 
-    async def update_memory(self, *, memory_id: str, data: dict[str, Any]) -> Any:
+    async def update_memory(self, *, memory_id: str, text: str) -> Any:
         return await self._request(
             "PUT",
             f"/api/v1/memories/{memory_id}",
-            json_body={"session_id": self.session_id, "data": data},
+            json_body={"session_id": self.session_id, "text": text},
         )
 
     async def get_memory_history(self, memory_id: str) -> Any:
@@ -257,26 +257,26 @@ def create_memory_mcp_server(memory_client: MemoryClient) -> McpSdkServerConfig:
     @tool(
         "memory_update",
         "Update one memory by id",
-        {"memory_id": str, "data": dict},
+        {"memory_id": str, "text": str},
     )
     async def memory_update(args: dict[str, Any]) -> dict[str, Any]:
         memory_id = args.get("memory_id")
-        data = args.get("data")
+        text = args.get("text")
         if not isinstance(memory_id, str) or not memory_id.strip():
             return _format_tool_result(
                 "memory_update_error",
                 {"error": "memory_id must be a non-empty string"},
             )
-        if not isinstance(data, dict):
+        if not isinstance(text, str) or not text.strip():
             return _format_tool_result(
                 "memory_update_error",
-                {"error": "data must be an object"},
+                {"error": "text must be a non-empty string"},
             )
         return await _run_tool(
             "memory_update",
             memory_client.update_memory(
                 memory_id=memory_id.strip(),
-                data=data,
+                text=text.strip(),
             ),
         )
 
