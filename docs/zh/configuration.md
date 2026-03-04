@@ -63,9 +63,9 @@
 
 执行模型（跑任务时必需）：
 
-- `ANTHROPIC_API_KEY`：必需
-- `ANTHROPIC_BASE_URL`（默认 `https://api.anthropic.com`）
-- `DEFAULT_MODEL`（默认 `claude-sonnet-4-20250514`）
+- `ANTHROPIC_API_KEY`：必需（支持 Anthropic 官方或 Anthropic 兼容服务）
+- `ANTHROPIC_BASE_URL`（默认 `https://api.anthropic.com`；使用兼容服务时建议显式配置）
+- `DEFAULT_MODEL`（默认 `claude-sonnet-4-20250514`；需与所用端点兼容）
 
 调度与拉取：
 
@@ -88,9 +88,9 @@
 
 必需（跑任务时）：
 
-- `ANTHROPIC_API_KEY`：必需
-- `ANTHROPIC_BASE_URL`：可选（同上）
-- `DEFAULT_MODEL`：必需（`executor/app/core/engine.py` 会读取 `os.environ["DEFAULT_MODEL"]`）
+- `ANTHROPIC_API_KEY`：必需（支持 Anthropic 官方或 Anthropic 兼容服务）
+- `ANTHROPIC_BASE_URL`：可选（同上；兼容服务通常需要）
+- `DEFAULT_MODEL`：必需（`executor/app/core/engine.py` 会读取 `os.environ["DEFAULT_MODEL"]`，需与端点兼容）
 - `WORKSPACE_PATH`：工作目录挂载点（默认 `/workspace`）
 
 可选：

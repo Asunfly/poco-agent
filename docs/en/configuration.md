@@ -66,9 +66,9 @@ Required (otherwise it will not start or cannot dispatch tasks):
 
 Execution model (required to run tasks):
 
-- `ANTHROPIC_API_KEY`: required
-- `ANTHROPIC_BASE_URL` (default `https://api.anthropic.com`)
-- `DEFAULT_MODEL` (default `claude-sonnet-4-20250514`)
+- `ANTHROPIC_API_KEY`: required (supports Anthropic official and Anthropic-compatible providers)
+- `ANTHROPIC_BASE_URL` (default `https://api.anthropic.com`; configure explicitly for compatible providers)
+- `DEFAULT_MODEL` (default `claude-sonnet-4-20250514`; must be compatible with your endpoint/provider)
 
 Scheduling & pulling:
 
@@ -91,9 +91,9 @@ Workspace cleanup (optional):
 
 Required (when running tasks):
 
-- `ANTHROPIC_API_KEY`: required
-- `ANTHROPIC_BASE_URL`: optional (same as above)
-- `DEFAULT_MODEL`: required (`executor/app/core/engine.py` reads `os.environ["DEFAULT_MODEL"]`)
+- `ANTHROPIC_API_KEY`: required (supports Anthropic official and Anthropic-compatible providers)
+- `ANTHROPIC_BASE_URL`: optional (same as above; usually required for compatible providers)
+- `DEFAULT_MODEL`: required (`executor/app/core/engine.py` reads `os.environ["DEFAULT_MODEL"]`; must match your endpoint/provider)
 - `WORKSPACE_PATH`: workspace mount path (default `/workspace`)
 
 Optional:

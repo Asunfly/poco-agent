@@ -27,8 +27,8 @@
 ./scripts/quickstart.sh
 ```
 
-脚本默认会进入交互模式，按提示输入 API Key（Anthropic 必填）并写入 `.env`。
-如果你需要在 CI 中运行，可使用 `--non-interactive` 和 `--anthropic-key`。
+脚本默认会进入交互模式，按提示输入模型 API Key（环境变量是 `ANTHROPIC_API_KEY`，支持 Anthropic 兼容端点）并写入 `.env`。
+如果你需要在 CI 中运行，可使用 `--non-interactive` 配合 `--llm-api-key` / `--llm-base-url` / `--model`。
 
 脚本会：
 
@@ -46,7 +46,7 @@
 - `--no-init-bucket`：跳过创建 bucket
 - `--no-chown-rustfs`：跳过将 `oss_data/` 改为 `10001:10001`
 
-执行脚本后请确认 `.env` 里已设置 `ANTHROPIC_API_KEY`。
+执行脚本后请确认 `.env` 里已设置 `ANTHROPIC_API_KEY`（可使用任意 Anthropic 兼容服务的 key）。
 
 ## 方式二：手动启动（本地开发/自部署）
 

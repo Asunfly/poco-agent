@@ -35,6 +35,7 @@ fi
 ANTHROPIC_KEY=""
 ANTHROPIC_BASE_URL=""
 DEFAULT_MODEL=""
+API_PROVIDER_MODE=""
 # Language setting (en or zh)
 LANG="en"
 
@@ -56,14 +57,17 @@ msg() {
     "usage.non_interactive") [[ "$LANG" == "zh" ]] && echo "  --non-interactive         禁用交互式提示（推荐用于 CI）" || echo "  --non-interactive         Disable interactive prompts (recommended for CI)" ;;
     "usage.no_start") [[ "$LANG" == "zh" ]] && echo "  --no-start                仅准备环境和目录" || echo "  --no-start                Only prepare env and directories" ;;
     "usage.force_env") [[ "$LANG" == "zh" ]] && echo "  --force-env               覆盖环境文件中的现有密钥" || echo "  --force-env               Overwrite existing keys in env file" ;;
-    "usage.anthropic_key") [[ "$LANG" == "zh" ]] && echo "  --anthropic-key KEY       Anthropic API 密钥（写入环境文件）" || echo "  --anthropic-key KEY       Anthropic API key (writes to env)" ;;
+    "usage.llm_api_key") [[ "$LANG" == "zh" ]] && echo "  --llm-api-key KEY         模型 API 密钥（Anthropic 兼容，写入环境文件）" || echo "  --llm-api-key KEY         Model API key (Anthropic-compatible, writes to env)" ;;
+    "usage.llm_base_url") [[ "$LANG" == "zh" ]] && echo "  --llm-base-url URL        模型 API Base URL（写入环境文件）" || echo "  --llm-base-url URL        Model API base URL (writes to env)" ;;
+    "usage.model") [[ "$LANG" == "zh" ]] && echo "  --model MODEL             默认模型 ID（写入环境文件）" || echo "  --model MODEL             Default model ID (writes to env)" ;;
+    "usage.anthropic_key") [[ "$LANG" == "zh" ]] && echo "  --anthropic-key KEY       兼容旧参数，等同于 --llm-api-key" || echo "  --anthropic-key KEY       Legacy alias for --llm-api-key" ;;
     "usage.lang") [[ "$LANG" == "zh" ]] && echo "  --lang LANG               语言设置 (en 或 zh，默认: en)" || echo "  --lang LANG               Language setting (en or zh, default: en)" ;;
     "usage.help") [[ "$LANG" == "zh" ]] && echo "  -h, --help                显示此帮助信息" || echo "  -h, --help                Show this help" ;;
     "usage.advanced") [[ "$LANG" == "zh" ]] && echo "高级选项:" || echo "Advanced options:" ;;
     "usage.examples") [[ "$LANG" == "zh" ]] && echo "示例:" || echo "Examples:" ;;
     "usage.example1") [[ "$LANG" == "zh" ]] && echo "  # 交互式设置（默认）" || echo "  # Interactive setup (default)" ;;
     "usage.example2") [[ "$LANG" == "zh" ]] && echo "  # 交互式设置但不启动服务" || echo "  # Interactive setup without starting services" ;;
-    "usage.example3") [[ "$LANG" == "zh" ]] && echo "  # 通过 CLI 快速设置并提供 API 密钥" || echo "  # Quick setup with API keys via CLI" ;;
+    "usage.example3") [[ "$LANG" == "zh" ]] && echo "  # 通过 CLI 快速设置模型 API" || echo "  # Quick model API setup via CLI" ;;
     "usage.example4") [[ "$LANG" == "zh" ]] && echo "  # 使用中文界面" || echo "  # Use Chinese interface" ;;
 
     # Print messages
@@ -76,7 +80,7 @@ msg() {
     "error.missing_cmd") [[ "$LANG" == "zh" ]] && echo "缺少命令" || echo "Missing command" ;;
     "error.unknown_option") [[ "$LANG" == "zh" ]] && echo "未知选项" || echo "Unknown option" ;;
     "error.docker_not_found") [[ "$LANG" == "zh" ]] && echo "未找到 docker compose" || echo "docker compose not found" ;;
-    "error.anthropic_not_set") [[ "$LANG" == "zh" ]] && echo "未设置 Anthropic API Key。请在 .env 中设置 ANTHROPIC_API_KEY，或运行 ./scripts/quickstart.sh（交互式）并传递 --anthropic-key。" || echo "Anthropic API key is not set. Configure ANTHROPIC_API_KEY in .env, or run ./scripts/quickstart.sh (interactive) / pass --anthropic-key." ;;
+    "error.anthropic_not_set") [[ "$LANG" == "zh" ]] && echo "未设置模型 API Key（ANTHROPIC_API_KEY）。请在 .env 中设置，或运行 ./scripts/quickstart.sh（交互式）并传递 --llm-api-key。" || echo "Model API key is not set (ANTHROPIC_API_KEY). Configure it in .env, or run ./scripts/quickstart.sh (interactive) / pass --llm-api-key." ;;
 
     # Headers
     "header.quickstart") [[ "$LANG" == "zh" ]] && echo "Poco 快速启动" || echo "Poco Quickstart" ;;
@@ -96,19 +100,23 @@ msg() {
     "setup.required") [[ "$LANG" == "zh" ]] && echo "是必需的" || echo "is required" ;;
 
     # API Key prompts
-    "prompt.anthropic_key") [[ "$LANG" == "zh" ]] && echo "请输入您的 Anthropic API 密钥（在 https://console.anthropic.com/ 获取）" || echo "Enter your Anthropic API key (get one at https://console.anthropic.com/)" ;;
-    "prompt.anthropic_warn") [[ "$LANG" == "zh" ]] && echo "Anthropic API 密钥通常以 'sk-ant-' 开头，请仔细检查。" || echo "Anthropic API key usually starts with 'sk-ant-'. Please double-check." ;;
+    "prompt.provider_select") [[ "$LANG" == "zh" ]] && echo "请选择模型 API 端点类型" || echo "Select your model API endpoint type" ;;
+    "prompt.provider_official") [[ "$LANG" == "zh" ]] && echo "1) Anthropic 官方 API（默认）" || echo "1) Anthropic official API (default)" ;;
+    "prompt.provider_compatible") [[ "$LANG" == "zh" ]] && echo "2) Anthropic 兼容 API（代理/第三方网关）" || echo "2) Anthropic-compatible API (proxy/third-party gateway)" ;;
+    "prompt.provider_choice") [[ "$LANG" == "zh" ]] && echo "请输入选择 [1-2]" || echo "Enter choice [1-2]" ;;
+    "prompt.anthropic_key") [[ "$LANG" == "zh" ]] && echo "请输入模型 API 密钥（支持 Anthropic 兼容 API）" || echo "Enter your model API key (Anthropic-compatible)" ;;
+    "prompt.anthropic_warn") [[ "$LANG" == "zh" ]] && echo "您选择了 Anthropic 官方 API，密钥通常以 'sk-ant-' 开头，请确认。" || echo "You selected Anthropic official API. Keys usually start with 'sk-ant-'; please double-check." ;;
 
     # Success messages
     "success.env_created") [[ "$LANG" == "zh" ]] && echo "已从 .env.example 创建 .env" || echo "Created .env from .env.example" ;;
-    "success.anthropic_configured") [[ "$LANG" == "zh" ]] && echo "已配置 Anthropic API 密钥" || echo "Anthropic API key configured" ;;
-    "success.anthropic_base_url") [[ "$LANG" == "zh" ]] && echo "已配置 Anthropic 基础 URL" || echo "Anthropic base URL configured" ;;
+    "success.anthropic_configured") [[ "$LANG" == "zh" ]] && echo "已配置模型 API 密钥" || echo "Model API key configured" ;;
+    "success.anthropic_base_url") [[ "$LANG" == "zh" ]] && echo "已配置模型 API Base URL" || echo "Model API base URL configured" ;;
     "success.default_model") [[ "$LANG" == "zh" ]] && echo "已配置默认模型" || echo "Default model configured" ;;
     "success.s3_endpoint") [[ "$LANG" == "zh" ]] && echo "已配置 S3 公共端点" || echo "S3 public endpoint configured" ;;
     "success.bootstrap") [[ "$LANG" == "zh" ]] && echo "引导完成！" || echo "Bootstrap completed!" ;;
 
     # Info messages
-    "info.anthropic_configured") [[ "$LANG" == "zh" ]] && echo "已配置 Anthropic API 密钥" || echo "Anthropic API key is configured" ;;
+    "info.anthropic_configured") [[ "$LANG" == "zh" ]] && echo "已配置模型 API 密钥" || echo "Model API key is configured" ;;
     "info.pulling_images") [[ "$LANG" == "zh" ]] && echo "正在拉取执行器镜像..." || echo "Pulling executor images..." ;;
 
     # Warnings
@@ -117,8 +125,8 @@ msg() {
     "warn.chmod_data_failed") [[ "$LANG" == "zh" ]] && echo "chmod RustFS 数据目录失败。您可能需要运行: sudo chown -R" || echo "Failed to chmod RustFS data dir. You may need to run: sudo chown -R" ;;
     "warn.chmod_workspace_failed") [[ "$LANG" == "zh" ]] && echo "chmod 工作空间目录失败。您可能需要运行: sudo chown -R" || echo "Failed to chmod workspace directories. You may need to run: sudo chown -R" ;;
     "warn.rustfs_init_failed") [[ "$LANG" == "zh" ]] && echo "rustfs-init 失败；您可以重试: docker compose --profile init up -d rustfs-init" || echo "rustfs-init failed; you can retry: docker compose --profile init up -d rustfs-init" ;;
-    "warn.anthropic_not_set") [[ "$LANG" == "zh" ]] && echo "未设置 Anthropic API Key（ANTHROPIC_API_KEY）！" || echo "Anthropic API key is not set (ANTHROPIC_API_KEY)!" ;;
-    "warn.default_model") [[ "$LANG" == "zh" ]] && echo "DEFAULT_MODEL 看起来不像 Claude 模型（应以 'claude-' 开头）。" || echo "DEFAULT_MODEL doesn't look like a Claude model (expected prefix 'claude-')." ;;
+    "warn.anthropic_not_set") [[ "$LANG" == "zh" ]] && echo "未设置模型 API Key（ANTHROPIC_API_KEY）！" || echo "Model API key is not set (ANTHROPIC_API_KEY)!" ;;
+    "warn.default_model") [[ "$LANG" == "zh" ]] && echo "您选择了 Anthropic 官方 API，DEFAULT_MODEL 通常应以 'claude-' 开头，请确认模型 ID 是否正确。" || echo "You selected Anthropic official API. DEFAULT_MODEL usually starts with 'claude-'; please verify model ID." ;;
 
     # Language selection
     "lang.prompt") [[ "$LANG" == "zh" ]] && echo "请选择语言 / Please select language:" || echo "Please select language / 请选择语言:" ;;
@@ -138,6 +146,9 @@ usage() {
   echo "$(msg "usage.non_interactive")"
   echo "$(msg "usage.no_start")"
   echo "$(msg "usage.force_env")"
+  echo "$(msg "usage.llm_api_key")"
+  echo "$(msg "usage.llm_base_url")"
+  echo "$(msg "usage.model")"
   echo "$(msg "usage.anthropic_key")"
   echo "$(msg "usage.lang")"
   echo "$(msg "usage.help")"
@@ -189,7 +200,7 @@ ADVANCED
   echo "  ./scripts/quickstart.sh --no-start"
   echo ""
   echo "$(msg "usage.example3")"
-  echo "  ./scripts/quickstart.sh --non-interactive --anthropic-key sk-ant-xxx"
+  echo "  ./scripts/quickstart.sh --non-interactive --llm-api-key <your-key> --llm-base-url <base-url> --model <model-id>"
   echo ""
   echo "$(msg "usage.example4")"
   echo "  ./scripts/quickstart.sh --lang zh"
@@ -549,6 +560,48 @@ select_language() {
   fi
 }
 
+infer_provider_mode_from_base_url() {
+  local raw_url="$1"
+  local normalized
+  normalized="$(echo "${raw_url:-}" | tr '[:upper:]' '[:lower:]')"
+  normalized="${normalized%/}"
+  if [[ "$normalized" == "https://api.anthropic.com/v1" ]]; then
+    normalized="https://api.anthropic.com"
+  fi
+  if [[ -z "$normalized" ]] || [[ "$normalized" == "https://api.anthropic.com" ]]; then
+    echo "official"
+    return
+  fi
+  echo "compatible"
+}
+
+select_provider_mode() {
+  local default_mode="${1:-official}"
+  local default_choice="1"
+  if [[ "$default_mode" == "compatible" ]]; then
+    default_choice="2"
+  fi
+
+  echo "$(msg "prompt.provider_select")" >&2
+  echo "$(msg "prompt.provider_official")" >&2
+  echo "$(msg "prompt.provider_compatible")" >&2
+  echo "" >&2
+  echo -n "$(msg "prompt.provider_choice") [$default_choice]: " >&2
+
+  local choice
+  read_line choice
+  echo "" >&2
+
+  if [[ -z "$choice" ]]; then
+    choice="$default_choice"
+  fi
+
+  case "$choice" in
+    2) echo "compatible" ;;
+    *) echo "official" ;;
+  esac
+}
+
 interactive_setup() {
   print_header "$(msg "header.interactive_setup")"
 
@@ -567,57 +620,100 @@ interactive_setup() {
   existing_default_model="$(read_env_key "DEFAULT_MODEL" || true)"
   existing_s3_endpoint="$(read_env_key "S3_PUBLIC_ENDPOINT" || true)"
 
-  # FIX: Allow CLI args to override .env defaults during interactive setup
+  # Allow CLI args to override .env defaults during interactive setup.
   if [[ -n "$ANTHROPIC_KEY" ]]; then existing_anthropic="$ANTHROPIC_KEY"; fi
+  if [[ -n "$ANTHROPIC_BASE_URL" ]]; then existing_anthropic_base_url="$ANTHROPIC_BASE_URL"; fi
+  if [[ -n "$DEFAULT_MODEL" ]]; then existing_default_model="$DEFAULT_MODEL"; fi
 
-  # Prompt for Anthropic key (required)
+  # Prompt for model API endpoint type and credentials.
   print_header "$(msg "header.required_config")"
-  ANTHROPIC_KEY="$(prompt_for_key "Anthropic API Key" \
+  local default_provider_mode
+  default_provider_mode="$(infer_provider_mode_from_base_url "$existing_anthropic_base_url")"
+  API_PROVIDER_MODE="$(select_provider_mode "$default_provider_mode")"
+
+  ANTHROPIC_KEY="$(prompt_for_key "Model API Key" \
     "$(msg "prompt.anthropic_key")" \
     "false" \
     "$existing_anthropic")"
-  if [[ -n "$ANTHROPIC_KEY" ]] && [[ "$ANTHROPIC_KEY" != sk-ant-* ]]; then
+  if [[ "$API_PROVIDER_MODE" == "official" ]] && [[ -n "$ANTHROPIC_KEY" ]] && [[ "$ANTHROPIC_KEY" != sk-ant-* ]]; then
     print_warn "$(msg "prompt.anthropic_warn")"
   fi
 
-  # Prompt for Anthropic Base URL (optional)
+  # Prompt for model API base URL.
+  local anthropic_label=$([[ "$LANG" == "zh" ]] && echo "模型 API Base URL" || echo "Model API Base URL")
+  local base_url_default=""
+  if [[ "$API_PROVIDER_MODE" == "official" ]]; then
+    if [[ "$LANG" == "zh" ]]; then
+      cat <<'EOF'
+
+您选择了 Anthropic 官方 API。
+按 Enter 使用默认值 (https://api.anthropic.com)。
+如果您使用代理或第三方网关，请将端点类型改为“Anthropic 兼容 API”。
+
+EOF
+    else
+      cat <<'EOF'
+
+You selected Anthropic official API.
+Press Enter to use the default endpoint (https://api.anthropic.com).
+If you use a proxy or third-party gateway, switch endpoint type to Anthropic-compatible API.
+
+EOF
+    fi
+    base_url_default="${existing_anthropic_base_url:-https://api.anthropic.com}"
+    if [[ "$(infer_provider_mode_from_base_url "$base_url_default")" != "official" ]]; then
+      base_url_default="https://api.anthropic.com"
+    fi
+    ANTHROPIC_BASE_URL="$(prompt_for_text "$anthropic_label" "$base_url_default" "true")"
+  else
+    if [[ "$LANG" == "zh" ]]; then
+      cat <<'EOF'
+
+您选择了 Anthropic 兼容 API。
+请输入服务商提供的 API Base URL（建议使用完整 HTTPS 地址）。
+示例: https://openrouter.ai/api/anthropic
+
+EOF
+    else
+      cat <<'EOF'
+
+You selected Anthropic-compatible API.
+Enter the API base URL provided by your service vendor (full HTTPS URL recommended).
+Example: https://openrouter.ai/api/anthropic
+
+EOF
+    fi
+    base_url_default="${existing_anthropic_base_url:-}"
+    while true; do
+      ANTHROPIC_BASE_URL="$(prompt_for_text "$anthropic_label" "$base_url_default" "true")"
+      if [[ -n "$ANTHROPIC_BASE_URL" ]]; then
+        break
+      fi
+      print_warn "Model API Base URL $(msg "setup.required")"
+    done
+  fi
+
+  # Prompt for default model (optional).
   if [[ "$LANG" == "zh" ]]; then
     cat <<'EOF'
 
-如果您使用代理或 Anthropic 的自定义 API 端点，请在下面输入基础 URL。
-否则，按 Enter 使用默认值 (https://api.anthropic.com)。
+请输入要使用的默认模型 ID（需与上面的 API 端点兼容）。按 Enter 使用默认值。
+官方端点常用: claude-sonnet-4-20250514, claude-opus-4-20250514
+兼容端点示例: anthropic/claude-sonnet-4.5
 
 EOF
   else
     cat <<'EOF'
 
-If you use a proxy or custom API endpoint for Anthropic, enter the base URL below.
-Otherwise, press Enter to use the default (https://api.anthropic.com).
+Enter the default model ID (must match your API endpoint). Press Enter for default.
+Official endpoint examples: claude-sonnet-4-20250514, claude-opus-4-20250514
+Compatible endpoint example: anthropic/claude-sonnet-4.5
 
 EOF
   fi
-  local anthropic_label=$([[ "$LANG" == "zh" ]] && echo "Anthropic 基础 URL" || echo "Anthropic Base URL")
-  ANTHROPIC_BASE_URL="$(prompt_for_text "$anthropic_label" "${existing_anthropic_base_url:-https://api.anthropic.com}" "true")"
-
-  # Prompt for Default Model (optional)
-  if [[ "$LANG" == "zh" ]]; then
-    cat <<'EOF'
-
-请输入要使用的默认 Claude 模型。按 Enter 使用默认值。
-常用选项: claude-sonnet-4-20250514, claude-opus-4-20250514
-
-EOF
-  else
-    cat <<'EOF'
-
-Enter the default Claude model to use. Press Enter to use the default.
-Common options: claude-sonnet-4-20250514, claude-opus-4-20250514
-
-EOF
-  fi
-  local model_label=$([[ "$LANG" == "zh" ]] && echo "默认 Claude 模型" || echo "Default Claude Model")
+  local model_label=$([[ "$LANG" == "zh" ]] && echo "默认模型 ID" || echo "Default Model ID")
   DEFAULT_MODEL="$(prompt_for_text "$model_label" "${existing_default_model:-claude-sonnet-4-20250514}" "true")"
-  if [[ -n "$DEFAULT_MODEL" ]] && [[ "$DEFAULT_MODEL" != claude-* ]]; then
+  if [[ "$API_PROVIDER_MODE" == "official" ]] && [[ -n "$DEFAULT_MODEL" ]] && [[ "$DEFAULT_MODEL" != claude-* ]]; then
     print_warn "$(msg "warn.default_model")"
   fi
 
@@ -692,8 +788,18 @@ while [[ $# -gt 0 ]]; do
       INTERACTIVE=true; shift ;;
     --non-interactive|--no-interactive)
       INTERACTIVE=false; shift ;;
+    --llm-api-key)
+      ANTHROPIC_KEY="$2"; shift 2 ;;
+    --llm-base-url)
+      ANTHROPIC_BASE_URL="$2"; shift 2 ;;
+    --model)
+      DEFAULT_MODEL="$2"; shift 2 ;;
     --anthropic-key)
       ANTHROPIC_KEY="$2"; shift 2 ;;
+    --anthropic-base-url)
+      ANTHROPIC_BASE_URL="$2"; shift 2 ;;
+    --default-model)
+      DEFAULT_MODEL="$2"; shift 2 ;;
     --lang)
       LANG="$2"; shift 2 ;;
     -h|--help)
@@ -732,6 +838,14 @@ if [[ "$INTERACTIVE" = false ]]; then
   if [[ -n "$ANTHROPIC_KEY" ]]; then
     write_env_key "ANTHROPIC_API_KEY" "$ANTHROPIC_KEY"
     print_success "$(msg "success.anthropic_configured")"
+  fi
+  if [[ -n "$ANTHROPIC_BASE_URL" ]]; then
+    write_env_key "ANTHROPIC_BASE_URL" "$ANTHROPIC_BASE_URL"
+    print_success "$(msg "success.anthropic_base_url")"
+  fi
+  if [[ -n "$DEFAULT_MODEL" ]]; then
+    write_env_key "DEFAULT_MODEL" "$DEFAULT_MODEL"
+    print_success "$(msg "success.default_model")"
   fi
 fi
 
@@ -857,23 +971,27 @@ if [[ "$anthropic_api_key_state_value" == "missing" ]]; then
     cat <<EOF
 
   请在 .env 中设置:
-    - ANTHROPIC_API_KEY
+    - ANTHROPIC_API_KEY（任意 Anthropic 兼容服务）
+    - ANTHROPIC_BASE_URL（可选，兼容服务通常需要）
 
   或运行:
     ./scripts/quickstart.sh
 
-  在此获取密钥: https://console.anthropic.com/
+  Anthropic 官方密钥可在此获取: https://console.anthropic.com/
+  若使用兼容服务，请使用服务商提供的密钥和 Base URL。
 EOF
   else
     cat <<EOF
 
   Set in .env:
-    - ANTHROPIC_API_KEY
+    - ANTHROPIC_API_KEY (any Anthropic-compatible service)
+    - ANTHROPIC_BASE_URL (optional; usually required for compatible services)
 
   Or run:
     ./scripts/quickstart.sh
 
-  Get credentials at: https://console.anthropic.com/
+  Anthropic official credentials: https://console.anthropic.com/
+  For compatible services, use the key and base URL from your provider.
 EOF
   fi
 else
@@ -885,7 +1003,7 @@ print_success "$(msg "success.bootstrap")"
 echo ""
 if [[ "$LANG" == "zh" ]]; then
   echo "后续步骤:"
-  echo "  1. 确保在 .env 中已设置 ANTHROPIC_API_KEY"
+  echo "  1. 确保在 .env 中已设置 ANTHROPIC_API_KEY（支持 Anthropic 兼容服务）"
   if [[ "$START_ALL" = true ]]; then
     echo "  2. 打开浏览器: http://localhost:3000"
     echo "  3. 查看日志: docker compose logs -f backend executor-manager frontend"
@@ -895,7 +1013,7 @@ if [[ "$LANG" == "zh" ]]; then
   fi
 else
   echo "Next steps:"
-  echo "  1. Make sure ANTHROPIC_API_KEY is set in .env"
+  echo "  1. Make sure ANTHROPIC_API_KEY is set in .env (Anthropic-compatible supported)"
   if [[ "$START_ALL" = true ]]; then
     echo "  2. Open browser: http://localhost:3000"
     echo "  3. View logs: docker compose logs -f backend executor-manager frontend"

@@ -27,8 +27,8 @@ If you are setting up for the first time and use local `rustfs` (`docker-compose
 ./scripts/quickstart.sh
 ```
 
-By default, the script runs in interactive mode and will prompt for your API keys (Anthropic is required) and write them into `.env`.
-Use `--non-interactive` and `--anthropic-key` if you need to run it in CI.
+By default, the script runs in interactive mode and prompts for your model API key (stored in `ANTHROPIC_API_KEY`, supports Anthropic-compatible endpoints), then writes it into `.env`.
+Use `--non-interactive` with `--llm-api-key` / `--llm-base-url` / `--model` if you need CI setup.
 
 The script will:
 
@@ -46,7 +46,7 @@ Common flags:
 - `--no-init-bucket`: skip bucket creation
 - `--no-chown-rustfs`: skip chowning `oss_data/` to `10001:10001`
 
-After running the script, ensure `ANTHROPIC_API_KEY` is set in `.env`.
+After running the script, ensure `ANTHROPIC_API_KEY` is set in `.env` (any Anthropic-compatible provider key is supported).
 
 ## Option 2: Manual start (local / self-hosted)
 
