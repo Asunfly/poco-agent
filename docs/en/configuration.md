@@ -30,7 +30,7 @@ Common:
   "http://127.0.0.1:3000"
 ]`
 - `EXECUTOR_MANAGER_URL`: Executor Manager URL, e.g. `http://executor-manager:8001`
-- `S3_PUBLIC_ENDPOINT`: public S3 URL for browser presigned URLs (local: `http://localhost:9000`). If unset, falls back to `S3_ENDPOINT`.
+- `S3_PUBLIC_ENDPOINT`: public S3 URL for browser presigned URLs (local: `http://localhost:9000`). If unset, falls back to `S3_ENDPOINT`. For Cloudflare R2 bucket-level custom domains, generated URLs may include a `/<S3_BUCKET>/` prefix; the effective URL path usually needs that segment removed (prefer rewrite at gateway/Worker/CDN).
 - `S3_REGION` (default `us-east-1`; Cloudflare R2 usually recommends `auto`)
 - `S3_FORCE_PATH_STYLE` (default `true` for MinIO/RustFS; Cloudflare R2 usually recommends `false`)
 - `S3_PRESIGN_EXPIRES`: presigned URL expiry in seconds (default `300`)

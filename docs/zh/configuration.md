@@ -27,7 +27,7 @@
 - `HOST`（默认 `0.0.0.0`）、`PORT`（默认 `8000`）
 - `CORS_ORIGINS`：允许来源列表（JSON 数组），示例：`["http://localhost:3000","http://127.0.0.1:3000"]`
 - `EXECUTOR_MANAGER_URL`：Executor Manager 地址，示例：`http://executor-manager:8001`
-- `S3_PUBLIC_ENDPOINT`：对外可访问的 S3 地址，用于生成给浏览器的预签名 URL（本地可用 `http://localhost:9000`）。未设置则使用 `S3_ENDPOINT`
+- `S3_PUBLIC_ENDPOINT`：对外可访问的 S3 地址，用于生成给浏览器的预签名 URL（本地可用 `http://localhost:9000`）。未设置则使用 `S3_ENDPOINT`。若使用 Cloudflare R2 bucket 级自定义域，生成 URL 里可能带有 `/<S3_BUCKET>/` 前缀；访问时通常需要去掉该段（建议在网关/Worker/CDN 层统一改写）。
 - `S3_REGION`（默认 `us-east-1`；Cloudflare R2 通常建议设为 `auto`）
 - `S3_FORCE_PATH_STYLE`（默认 `true`，对 MinIO/RustFS 一般需要；Cloudflare R2 通常建议设为 `false`）
 - `S3_PRESIGN_EXPIRES`：预签名 URL 过期秒数（默认 `300`）

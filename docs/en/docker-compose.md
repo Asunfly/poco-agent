@@ -124,6 +124,24 @@ Quick validation (in browser devtools network tab):
 - Verify requests used by viewers/downloader can complete (including `HEAD` or range requests when present).
 - If you use `S3_PUBLIC_ENDPOINT`, ensure it points to a browser-reachable domain.
 
+R2 custom domain path note (`S3_PUBLIC_ENDPOINT`):
+
+- When `S3_PUBLIC_ENDPOINT` is set to a Cloudflare R2 custom domain that is already bound to a single bucket, generated file URLs may still include the `/<S3_BUCKET>/` prefix.
+- Example generated URL:
+  `https://files.example.com/my-bucket/path/to/file.png?...`
+- For bucket-level custom domains, the effective path is usually:
+  `https://files.example.com/path/to/file.png?...`
+  which means removing the `/<S3_BUCKET>/` segment.
+
+Recommendations:
+
+- Prefer path rewrite at gateway/Worker/CDN level (for example: `^/<S3_BUCKET>/(.*)$ -> /$1`) instead of handling it in many frontend places.
+- If you want to keep presigned URLs unchanged, keep `S3_PUBLIC_ENDPOINT` on the account endpoint (`https://<accountid>.r2.cloudflarestorage.com`).
+
+Note:
+
+- If your object access relies on strict presigned-signature validation, manually modifying the URL may cause signature mismatch. Validate with your auth mode before production rollout.
+
 Start (no rustfs):
 
 ```bash
